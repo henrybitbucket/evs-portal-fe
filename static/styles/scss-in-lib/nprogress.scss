@@ -1,0 +1,11 @@
+@import '~nprogress/nprogress';
+
+#nprogress {
+  .bar {
+    z-index: 2000;
+    background: #3e8ef7;
+  }
+  .spinner {
+    display:  none;
+  }
+}

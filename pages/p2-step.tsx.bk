@@ -1,0 +1,1216 @@
+import React from 'react';
+import css from 'styled-jsx/css';
+import { withNamespaces } from '@app/i18nnext';
+
+import { PageContent } from '@app/components/PageContent';
+import { TotPage } from '@app/components/TotPage';
+import { ProgressLoading } from '@app/components/Common';
+import { IBasicPageProps } from '@app/components/Types';
+
+import 'moment-timezone';
+import { getAllDevices, getFiles, getRelatedLogs, editDevice, linkMsn, getLastSubmit, saveMeterCommissionSubmit } from "@app/api/log";
+import moment from "moment";
+
+import makeAnimated from 'react-select/animated';
+const animatedComponents = makeAnimated();
+const Swal = require('sweetalert2');
+
+const styles = css`
+  @import "static/styles/scss-in-theme/bootstrap/functions";
+  @import "static/styles/scss-in-theme/bootstrap/variables";
+  @import "static/styles/scss-in-theme/mixins";
+
+  :global(body) {
+    padding: 0px;
+    height: 100%;
+  }
+  :global(#__next) {
+    height: 100%;
+  }
+  :global(#__next > div) {
+    height: 100%;
+  }
+  :global(.page-content) {
+    padding: 0px;
+    padding: 0px;
+    height: 101%;
+    background: #f3f3f4;
+  }
+  .dashboard {
+    .check-in-box {
+      .action{
+        a {
+          display:block;
+          float:left;
+        }
+        span {
+          float:right;
+          width:unset;
+        }
+      }
+    }
+    .panel-hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .panel-show {
+      opacity: 1;
+      visibility: unset;
+    }
+  }
+  :global(.g-info-window h3) {
+    margin-top: 10px !important;
+  }
+
+  :global(div[data-test='doctor-card-info-rating'] > div) {
+    align-items: center !important;
+  }
+  :global(div[data-test='doctor-card-info-location']) {
+    font-size: 17px !important;
+    color: #111 !important;
+    font-weight: 400 !important;
+  }
+
+  :global(a[data-test='doctor-card-info-name'] h3) {
+    font-weight: 500 !important;
+    font-size: 18px !important;
+  }
+
+  *[data-test='doctor-card-info-rating-review'] {
+    color: #333;
+    font-size: 14px;
+  }
+  *[data-test='regular-text-section'] {
+    width: 90%;
+  }
+
+  :global(div[data-test='doctor-card-info-rating-number']) {
+    margin-left: 5px !important;
+  }
+
+  @include media-breakpoint-down(sm){
+    :global(#toast-container) {
+      top: 76px;
+      left: 10px;
+      right: 10px
+      & :global(.toast-info) {
+        width: 100%;
+      }
+    }
+  }
+
+  .lfZhxT {
+    -webkit-box-align: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    font: 13px / 1 sharp-sans-semibold, Arial, sans-serif;
+    height: 32px;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding: 0px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    animation: 0.1s ease-out 0s 1 normal forwards running ehLtDs;
+    cursor: pointer;
+    background-color: rgb(255, 240, 75);
+    border: 1px solid rgb(255, 240, 75);
+    color: rgb(0, 35, 75);
+    margin-top: 8px;
+    width: 70px;
+    margin-left: 5px;
+    text-align: center;
+  }
+  .aqxfE {
+    -webkit-box-align: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    font: 13px / 1 sharp-sans-semibold, Arial, sans-serif;
+    height: 32px;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding: 0px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    animation: 0.1s ease-out 0s 1 normal forwards running ehLtDs;
+    background-color: rgb(255, 240, 75);
+    color: rgb(0, 35, 75);
+    border: 0px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+  }
+  :global(.qDvlK > svg) {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-right: 7px;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    position: initial;
+  }
+  :global(.qDvlK) {
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    color: rgb(43, 191, 237);
+    font: 15px / 24px sharp-sans-semibold, Arial, sans-serif;
+  }
+  th {
+    border: none !important;
+  }
+  :global(.box-setting) {
+    @media(max-width: 800px) {
+      width: 85% !important;
+    }
+  }
+  :global(.button-btn) {
+    display: flex;
+    border-radius: 5px;
+    height: 40px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    background-color: #042ee1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    width: 150px;
+    transition: 0.2s;
+    &:hover {
+      background-color: #03114e;
+      color: #fffe00;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      transition: 0.2s;
+    }
+  }
+  :global(.button-icon) {
+    display: flex;
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    font-size: 25px;
+    color: #000000;
+    border-radius: 50%;
+    transition: 0.15s;
+    &:hover {
+      border-radius: 50%;
+      color: #fffe00;
+      background: #03114e;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      transition: 0.15s;
+    }
+  }
+  :global(.btn-item) {
+    background-color: #042ee1;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-width: 5px;
+    border-style: thin;
+    border-radius: 5px;
+    border-color: #042ee1;
+    font-weight: 400;
+    cursor: pointer;
+    height: 30px;
+    width: 150px;
+  }
+  :global(.btn-item:hover) {
+    background-color: #2f077c;
+    color: #f9f32e;
+  }
+  :global(.btn-item-disabled) {
+    background-color: #848899;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-width: 5px;
+    border-style: thin;
+    border-radius: 5px;
+    border-color: #042ee1;
+    font-weight: 400;
+    cursor: pointer;
+    height: 30px;
+    width: 150px;
+  }
+  :global(.site-title) {
+    color: #000000;
+    font-size: 20px;
+    margin: 15px;
+    background: aliceblue;
+    height: 60px;
+    align-items: center;
+    display: flex;
+    border-radius: 10px;
+    padding-left: 15px;
+    font-weight: 500;
+  }
+`;
+
+interface IDashboardPageState {
+
+}
+
+class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
+  state = {
+    ...this.props,
+    styles: {
+      enabledText: { color: 'white', textAlign: 'center', fontSize: '16' },
+      enabledButton: {
+          backgroundColor: '#BD2228', borderColor: '#BD2228', borderRadius: '5px', borderWidth: '1px', marginTop: '56px',
+          width: '160px', height: '41px', justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          fontWeight: '500',
+          height: '40px',
+      },
+    },
+  };
+
+  constructor(props) {
+    super(props);
+    this.state.setFormPosition = "none";
+  }
+
+  static getInitialProps = async (args) => {
+    let { query: { q, page, }, asPath, req, initialState: {} } = args;
+
+    let pageNumber = Number(page) || 1;
+    let params = {
+      pageNumber: pageNumber,
+      limit: 10,
+      offset: (pageNumber - 1) * 10,
+    };
+    return {
+      namespacesRequired: ['common'],
+      asPath,
+      key: Date.now(),
+      useTemplate: true,
+      loginRequire: true,
+    };
+  }
+
+  componentDidMount() {
+    this.setState({ mapKey: Date.now() })
+  }
+
+  onboardingCheck = async () => {
+    await this.setState({ isLoading: true, device: null, check: null, piFileUpLoads: [], showLastSubmit: null});
+    this.state.msn = (this.state.msn || '').trim();
+    this.state.sn = (this.state.sn || '').trim();
+    if (!this.state.msn && !this.state.sn) {
+      Swal.fire(
+        'Error!',
+        'Please input MCU SN or Meter SN',
+        'error',
+      );
+      await this.setState({ isLoading: false });
+      return;
+    }
+    let deviceDetail = await getAllDevices({
+      options: {
+        querySn: this.state.sn,
+        queryMsn: !this.state.sn ? this.state.msn: '',
+        queryAllDate: "true"
+      },
+    });
+    let device = deviceDetail?.response?.results?.length ? deviceDetail.response.results[0] : {};
+
+    // https://powerautomationsg.atlassian.net/browse/MMS-143
+    if (!!device.id && (!!this.state.msn && this.state.msn != device.msn)) {
+      Swal.fire(
+        'Error!',
+        'the MCU and Meter ID searched are not coupled with each other, pls help to double check',
+        'error',
+      );
+      await this.setState({ isLoading: false, check: null });
+      return;
+    }
+
+    this.setState({ check: null })
+    if (device.id) {
+      if (!device.msn) {
+        Swal.fire(
+          'Error!',
+          'Please link MSN for this device and try again !',
+          'error',
+        );
+        await this.setState({ isLoading: false });
+        return;
+      }
+      await this.getMeterDataLogs(device.uid);
+      await this.getFiles({ uid: device.uid, type: 'MMS_P2_TEST' });
+      await this.setState({ device: device });
+    } else {
+      Swal.fire(
+        'Error!',
+        'Device doesn\'t exists!',
+        'error',
+      );
+      await this.setState({ isLoading: false });
+      return;
+    }
+  }
+
+  onStatusCheck = async () => {
+    await this.onboardingCheck();
+    if (this.state.device?.id) {
+      await this.setState({loading: true});
+      let res = await getLastSubmit({uid: this.state.device.uid || '', msn: this.state.device.msn || ''});
+      if (res && res.success) {
+        let uris = (res.response?.meterPhotos?.split(",") || []).filter(p => !!p);
+        let piFileUpLoads = uris.map((uri, idx) => {
+          return {
+            uri: uri.startsWith('http') ? uri : window.location.origin + uri,
+            title: uri.startsWith('http') ? uri : window.location.origin + uri,
+            text: (idx + 1) + '/' + uris.length
+          }
+        })
+        await this.setState({showLastSubmit: {data: res.response}, piFileUpLoads, piFileUpLoadCurrentIndex: 0});
+
+      } else {
+        await this.setState({showLastSubmit: {data: {...this.state.device, timeSubmit: null, piFileUpLoads: []}}});
+      }
+      await this.setState({loading: false});
+    }
+  }
+
+  coupleDevice = async () => {
+    await this.setState({ isLoading: true, device: null, piFileUpLoads: [], showLastSubmit: null});
+    this.state.msn = (this.state.msn || '').trim();
+    this.state.sn = (this.state.sn || '').trim();
+    if (!this.state.sn || !this.state.msn) {
+      Swal.fire(
+        'Error!',
+        (!this.state.msn ? 'Meter SN ' : 'MCU SN ') + 'is required!',
+        'error',
+      );
+      this.setState({isLoading: false})
+      return
+    }
+
+    let deviceDetail = await getAllDevices({
+      options: {
+        querySn: (this.state.sn || '').trim(),
+        queryAllDate: "true"
+      },
+      offset: 0,
+      limit: 1,
+    });
+    let device = deviceDetail?.response?.results?.length ? deviceDetail.response.results[0] : {};
+
+    if (!!device.id && !device.msn) {
+      const params = {
+        msn: this.state.msn,
+        sn: device.sn,
+        groupId: device?.group?.id || 1,
+      }
+      let rp = await linkMsn(params);
+      await this.setState({ isLoading: false });
+      if (rp.success) {
+        Swal.fire(
+          'Information!',
+          rp.success == true ? 'Link Msn Successfully!' : (rp.message || rp.errorDescription),
+          'success',
+        );
+      } else {
+        Swal.fire(
+          'Error!',
+          rp.message || rp.errorDescription,
+          'error',
+        );
+      }
+    } else {
+      Swal.fire(
+        'Error!',
+        !!device.id ? 'the MCU and Meter ID searched are coupled with each other, pls help to double check' : 'Device doesn\'t exists!',
+        'error',
+      );
+      await this.setState({ isLoading: false });
+      return;
+    }
+    await this.setState({ isLoading: false });
+  }
+
+  deCoupleDevice = async () => {
+    await this.setState({ isLoading: true, device: null, piFileUpLoads: [], showLastSubmit: null});
+    this.state.msn = (this.state.msn || '').trim();
+    this.state.sn = (this.state.sn || '').trim();
+    if (!this.state.sn || !this.state.msn) {
+      Swal.fire(
+        'Error!',
+        (!this.state.msn ? 'Meter SN ' : 'MCU SN ') + 'is required!',
+        'error',
+      );
+      this.setState({isLoading: false})
+      return
+    }
+
+    let deviceDetail = await getAllDevices({
+      options: {
+        querySn: (this.state.sn || '').trim(),
+        queryAllDate: "true"
+      },
+      offset: 0,
+      limit: 1,
+    });
+    let device = deviceDetail?.response?.results?.length ? deviceDetail.response.results[0] : {};
+
+    if (!!device.id && device.msn === this.state.msn && device.sn === this.state.sn) {
+      const updatedDevice = {
+        msn: null,
+        id: device.id,
+        sn: device.sn,
+        uid: device.uid
+      }
+      let rp = await editDevice(updatedDevice);
+      if (rp.success) {
+        Swal.fire(
+          'Information!',
+          rp.success == true ? 'Device de-couple successfully!' : (rp.message || rp.errorDescription),
+          'success',
+        );
+      } else {
+        Swal.fire(
+          'Error!',
+          rp.message || rp.errorDescription,
+          'error',
+        );
+      }
+    } else {
+      Swal.fire(
+        'Error!',
+        !!device.id ? 'the MCU and Meter ID searched are not coupled with each other, pls help to double check' : 'Device doesn\'t exists!',
+        'error',
+      );
+      await this.setState({ isLoading: false });
+      return;
+    }
+    await this.setState({ isLoading: false });
+  }
+
+  getFiles = async (params) => {
+    await this.setState({ isLoading: true })
+    let rp = await getFiles({ ...params });
+    await this.setState({ isLoading: false });
+    let piFileUpLoads = (rp?.response || []).map((it, index) => {
+      return {
+        uri: window.location.origin + '/api/file/' + it.uid + '/' + it.id,
+        title: it.altName,
+        text: ('Uploaded By: ' + (it.uploadedBy || 'System')) + ' (' + moment(it.createdDate).format("YYYY-MM-DD HH:mm:ss") + ') ' + '(' + (index + 1) + '/' + ((rp?.response || []).length) + ')'
+      }
+    });
+    this.setState({ piFileUpLoads: piFileUpLoads || [], showPhotoP1Test: true, piFileUpLoadCurrentIndex: 0 });
+  }
+
+  getMeterDataLogs = async (uid) => {
+    uid = (uid || this.state.device?.uid).trim();
+    this.setState({ isLoading: true })
+    let rp = await getRelatedLogs(
+      {
+        options: {
+          uid: uid/*'BIE2IEYAAMAEYABJAA'*/,
+          msn: this.state.device?.msn,
+          ptype: "MDT",
+          type: "SUBSCRIBE",
+        },
+        offset: 0,
+        limit: 1,
+      }
+    );
+    let data = [];
+    for (let i = 0; i < rp?.response?.results.length; i++) {
+      if (rp?.response?.results[i].ptype === 'MDT') {
+        const raw = JSON.parse(rp?.response?.results[i].raw);
+        (raw?.payload?.data || []).forEach(r => {
+          data.push(r);
+        });
+      }
+    }
+    await this.setState({
+      meterData: data,
+      isLoading: false,
+    })
+  }
+
+  render() {
+
+    let tempStyles = this.state.styles;
+    if (this.state.device?.uid) {
+      this.state.device.timeSubmit = this.state.device.timeSubmit || Date.now();
+    }
+    return (
+      <TotPage title={'Provisioning Portal'}>
+        <div className="dashboard">
+          <style jsx>{styles}</style>
+          <PageContent>
+            <div
+              style={{
+                background: 'transparent',
+                minHeight: '450px',
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: '#fff',
+                flex: 1,
+                position: 'relative',
+              }}
+            >
+              <div style={{
+                padding: '15px',
+                borderBottom: '1px solid #ddd',
+                paddingTop: '20px',
+                paddingBottom: '20px',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}>
+                <div style={{
+                  width: '100%',
+                  padding: '15px',
+                  paddingTop: '20px',
+                  paddingBottom: '0px',
+                  fontWeight: 400,
+                  fontSize: '18px',
+                  color: '#000000'
+                }}>
+                  <span>{'Device Management'} <i className="fa fa-caret-right ml-5 mr-5"/> {'P2 Step'}</span>
+                  <h5 className="site-title">{'P2 Step'}</h5>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'row', width: '100%', padding: '15px' }}>
+                  <input
+                    style={{
+                      border: '1px solid #00000020',
+                      borderRadius: '5px',
+                      outline: 'unset',
+                      height: '40px',
+                      width: '300px',
+                      paddingLeft: '10px',
+                      alignSelf: 'center',
+                    }}
+                    value={this.state.msn || ""}
+                    onChange={(event) => {
+                      this.setState({ msn: event.target.value });
+                    }}
+                    placeholder={'Meter SN'}
+                  />
+                  <input
+                    style={{
+                      border: '1px solid #00000020',
+                      borderRadius: '5px',
+                      outline: 'unset',
+                      height: '40px',
+                      width: '300px',
+                      paddingLeft: '10px',
+                      alignSelf: 'center',
+                      marginLeft: '10px'
+                    }}
+                    value={this.state.sn || ""}
+                    onChange={(event) => {
+                      this.setState({ sn: event.target.value });
+                    }}
+                    placeholder={'MCU SN'}
+                  />
+                  <div
+                    className="button-btn w-160 ml-10"
+                    onClick={async () => {
+                      await this.setState({action: "coupleDevice"})
+                      this.coupleDevice();
+                    }}
+                  >
+                    <span>{'COUPLE'}</span>
+                  </div>
+                  <div
+                    className="button-btn w-160 ml-10"
+                    onClick={async () => {
+                      await this.setState({action: "deCoupleDevice"})
+                      this.deCoupleDevice();
+                    }}
+                  >
+                    <span>{'DE-COUPLE'}</span>
+                  </div>
+                  <div
+                    className="button-btn w-160 ml-10"
+                    onClick={async () => {
+                      await this.setState({action: "onboardingCheck"})
+                      this.onboardingCheck();
+                    }}
+                  >
+                    <span>{'ONBOARDING CHECK'}</span>
+                  </div>
+                  <div
+                    className="button-btn w-160 ml-10"
+                    onClick={async () => {
+                      await this.setState({action: "onStatusCheck"})
+                      this.onStatusCheck();
+                    }}
+                  >
+                    <span>{'STATUS'}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'row', padding: '30px' }}>
+                <div style={{width: '40%'}}>
+                  {(this.state.device?.uid && this.state.action === 'onboardingCheck') && (
+                    <table className="table" style={{ border: '1px solid #e4eaec' }}>
+                      <tbody>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'MCU Profile'}</td>
+                        <td style={{ padding: '15px' }}>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`MCU SN:`}</div>
+                            <div>{this.state.device.sn}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`MCU UUID:`}</div>
+                            <div>{this.state.device.uid}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`ESIM ID:`}</div>
+                            <div>{this.state.device.cid}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`STATUS:`}</div>
+                            <div>{this.state.device.status}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`COUPLED STATE:`}</div>
+                            <div>{this.state.device.type || 'N/A'}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`COUPLED USER:`}</div>
+                            <div>{this.state.device.coupledUser}</div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Meter SN'}</td>
+                        <td style={{ padding: '15px', borderBottom: '1px solid #e4eaec', }}>
+                          <div style={{ display: 'flex' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`Meter SN:`}</div>
+                            <div>{this.state.device.msn}</div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Meter Data'}</td>
+                        {!!this.state.meterData?.length && (
+                          <td style={{ padding: '15px' }}>
+                            <div>{`Kwh: ${this.state.meterData[0].kwh || ''}`}</div>
+                            <div>{`Kw: ${this.state.meterData[0].kw || ''}`}</div>
+                            <div>{`I: ${this.state.meterData[0].i || ''}`}</div>
+                            <div>{`V: ${this.state.meterData[0].v || ''}`}</div>
+                            <div>{`PF: ${this.state.meterData[0].pf || ''}`}</div>
+                            <div>{`DTime: ${this.state.meterData[0].dt ? moment(this.state.meterData[0].dt).format("YYYY-MM-DD HH:mm:ss") : ""} (Meter Time)`}</div>
+                          </td>
+                        )}
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Commit User ID'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div>{this.props.userInfo?.email || ''}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'P2Checking time:'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div>{!!this.state.device?.timeSubmit ? moment(new Date(this.state.device?.timeSubmit)).format("YYYY-MM-DD HH:mm:ss") : ''}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px',
+                          whiteSpace: 'nowrap',
+                        }}>{'P2Checking Result:'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div style={{
+                            flex: 1,
+                            paddingTop: '10px',
+                            marginBottom: '5px',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                          }}>
+                            <div style={{
+                              flex: 1,
+                              marginLeft: '15px',
+                              marginBottom: '5px',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'flex-start',
+                            }}>
+                              <div
+                                disabled={false}
+                                onClick={() => {
+                                  this.setState({check: 'pass'});
+                                }}
+                                style={{
+                                  ...tempStyles.enabledButton,
+                                  backgroundColor: this.state.check === 'pass' ? '#68c9c3' : '#125e8c',
+                                  borderColor: this.state.check === 'pass' ? '#68c9c3' : '#125e8c',
+                                  width: '80px',
+                                  marginTop: '5px',
+                                  marginRight: '10px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <div style={tempStyles.enabledText}>{"PASS"}</div>
+                              </div>
+                              <div
+                                disabled={false}
+                                onClick={() => {
+                                  this.setState({check: 'fail'});
+                                }}
+                                style={{
+                                  ...tempStyles.enabledButton,
+                                  backgroundColor: this.state.check === 'fail' ? '#68c9c3' : '#8c1212',
+                                  borderColor: this.state.check === 'fail' ? '#68c9c3' : '#8c1212',
+                                  width: '80px',
+                                  marginTop: '5px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <div style={tempStyles.enabledText}>{"FAIL"}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'flex-end',
+                              width: '100%',
+                            }}
+                          >
+
+                            <div
+                              disabled={false}
+                              onClick={async () => {
+                                try {
+                                  if (!this.state.check) {
+                                    Swal.fire(
+                                      'Error!',
+                                      'Please select P2Checking Result!',
+                                      'error',
+                                    );
+                                    return;
+                                  }
+                                  await this.setState({isLoading: true});
+                                  let res = await saveMeterCommissionSubmit({
+                                    uid: this.state.device?.uid || '',
+                                    sn: this.state.device?.sn || '',
+                                    cid: this.state.device?.cid || '',
+                                    msn: this.state.device?.msn || '',
+                                    isPassed: this.state?.check === 'pass',
+                                    kwh: !!this.state.meterData?.length ? this.state.meterData[0].kwh : '',
+                                    kw: !!this.state.meterData?.length ? this.state.meterData[0].kw : '',
+                                    i: !!this.state.meterData?.length ? this.state.meterData[0].i : '',
+                                    v: !!this.state.meterData?.length ? this.state.meterData[0].v : '',
+                                    pf: !!this.state.meterData?.length ? this.state.meterData[0].pf : '',
+                                    dt: !!this.state.meterData?.length ? new Date(this.state.meterData[0].dt).getTime() : null,
+                                    meterPhotos: (this.state.piFileUpLoads || []).map(file => file.uri).join(","),
+                                    status: this.state.device?.status || '',
+                                    type: this.state.device?.type || null,
+                                    lastOBRDate: this.state.device?.lastOBRDate,
+                                    installer: this.state.device?.installer?.userId || null,
+                                    coupledUser: this.state.device?.coupledUser,
+                                    // installer: this.props.profile?.userId || this.props.profile?.id || null,
+                                    userSubmit: this.props.userInfo?.email,
+                                    timeSubmit: this.state.device?.timeSubmit || Date.now(),
+                                  });
+                                  if (res && res.success) {
+                                    Swal.fire(
+                                      'Information!',
+                                      'Report has been save successfully!',
+                                      'success',
+                                    );
+                                  } else {
+                                    Swal.fire(
+                                      'Error!',
+                                      res?.message || res?.errorDescription || 'System error!',
+                                      'error',
+                                    );
+                                  }
+                                  await this.setState({isLoading: false, check: null});
+                                } catch (err) {
+                                  console.info(err)
+                                  await this.setState({isLoading: false, check: null});
+                                }
+                              }}
+                              style={{
+                                ...tempStyles.enabledButton,
+                                backgroundColor: '#125e8c',
+                                borderColor: '#125e8c',
+                                width: '80px',
+                                marginTop: '5px',
+                                marginRight: '10px',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <div style={tempStyles.enabledText}>{"SUBMIT"}</div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  )}
+                  {(!!this.state.showLastSubmit?.data?.id) && (
+                    <table className="table" style={{ border: '1px solid #e4eaec' }}>
+                      <tbody>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'MCU Profile'}</td>
+                        <td style={{ padding: '15px' }}>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`MCU SN:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.sn}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`MCU UUID:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.uid}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`ESIM ID:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.cid}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`STATUS:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.status}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`COUPLED STATE:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.type || 'N/A'}</div>
+                          </div>
+                          <div style={{ display: 'flex', padding: '2px 0px' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`COUPLED USER:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.coupledUser}</div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Meter SN'}</td>
+                        <td style={{ padding: '15px', borderBottom: '1px solid #e4eaec', }}>
+                          <div style={{ display: 'flex' }}>
+                            <div style={{ fontWeight: '500', width: '140px', color: '#000' }}>{`Meter SN:`}</div>
+                            <div>{this.state.showLastSubmit?.data?.msn}</div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Meter Data'}</td>
+                        <td style={{ padding: '15px' }}>
+                          <div>{`Kwh: ${this.state.showLastSubmit?.data?.kwh || ''}`}</div>
+                          <div>{`Kw: ${this.state.showLastSubmit?.data?.kw || ''}`}</div>
+                          <div>{`I: ${this.state.showLastSubmit?.data?.i || ''}`}</div>
+                          <div>{`V: ${this.state.showLastSubmit?.data?.v || ''}`}</div>
+                          <div>{`PF: ${this.state.showLastSubmit?.data?.pf || ''}`}</div>
+                          <div>{`DTime: ${this.state.showLastSubmit?.data?.dt ? (moment(this.state.showLastSubmit?.data?.dt).format("YYYY-MM-DD HH:mm:ss") + " (Meter Time)") : ""}`}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'Commit User ID'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div>{this.state.showLastSubmit?.data?.userSubmit || ''}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px'
+                        }}>{'P2Checking time:'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div>{!!this.state.showLastSubmit?.data?.timeSubmit ? moment(new Date(this.state.showLastSubmit?.data?.timeSubmit)).format("YYYY-MM-DD HH:mm:ss") : ''}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{
+                          fontWeight: '500',
+                          width: '140px',
+                          color: '#000',
+                          borderRight: '1px solid #e4eaec',
+                          padding: '15px',
+                          whiteSpace: 'nowrap',
+                        }}>{'P2Checking Result:'}</td>
+                        <td style={{ padding: '15px', borderTop: '1px solid #e4eaec', }}>
+                          <div style={{
+                            flex: 1,
+                            paddingTop: '10px',
+                            marginBottom: '5px',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                          }}>
+                            <div style={{
+                              flex: 1,
+                              marginLeft: '15px',
+                              marginBottom: '5px',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'flex-start',
+                            }}>
+                              {this.state.showLastSubmit?.data?.isPassed === true && (
+                              <div
+                                disabled={true}
+                                style={{
+                                  ...tempStyles.enabledButton,
+                                  backgroundColor: this.state.check === 'pass' ? '#68c9c3' : '#125e8c',
+                                  borderColor: this.state.check === 'pass' ? '#68c9c3' : '#125e8c',
+                                  width: '80px',
+                                  marginTop: '5px',
+                                  marginRight: '10px',
+                                }}
+                              >
+                                <div style={tempStyles.enabledText}>{"PASS"}</div>
+                              </div>
+                              )}
+                              {this.state.showLastSubmit?.data?.isPassed === false && (
+                              <div
+                                disabled={true}
+                                style={{
+                                  ...tempStyles.enabledButton,
+                                  backgroundColor: this.state.check === 'fail' ? '#68c9c3' : '#8c1212',
+                                  borderColor: this.state.check === 'fail' ? '#68c9c3' : '#8c1212',
+                                  width: '80px',
+                                  marginTop: '5px',
+                                }}
+                              >
+                                <div style={tempStyles.enabledText}>{"FAIL"}</div>
+                              </div>
+                              )}
+                              {(this.state.showLastSubmit?.data?.isPassed === null || this.state.showLastSubmit?.data?.isPassed === undefined) && (
+                              <div
+                                disabled={true}
+                                style={{
+                                  ...tempStyles.enabledButton,
+                                  backgroundColor: '#898989',
+                                  borderColor: '#898989',
+                                  width: '80px',
+                                  marginTop: '5px',
+                                }}
+                              >
+                                <div style={tempStyles.enabledText}>{"NONE"}</div>
+                              </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                <div style={{width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                  {(
+                  (!!this.state.showPhotoP1Test || !!this.state.showPhotoP2Test)
+                  && (this.state.action == 'onboardingCheck' && !!this.state.piFileUpLoads?.length || this.state.action == 'onStatusCheck' && !!this.state.piFileUpLoads?.length && this.state.showLastSubmit?.data?.uid)
+                  )&& (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <div style={{ fontWeight: '500', color: '#000', }}>{'Meter Photo'}</div>
+                      <div style={{ position: 'relative', minHeight: '400px', backgroundColor: '#ffffff' }}>
+                        <img
+                          src={this.state.piFileUpLoads[this.state.piFileUpLoadCurrentIndex].uri}
+                          key={this.state.piFileUpLoads[this.state.piFileUpLoadCurrentIndex].uri}
+                          style={{
+                            width: '500px',
+                            maxWidth: '500px',
+                            objectFit: 'cover',
+                            minHeight: '500px',
+                          }}
+                        />
+                        <div
+                          style={{
+                            width: '500px',
+                            maxWidth: '500px',
+                            backgroundColor: '#ffffff',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '20px',
+                          }}
+                        >
+                        <span style={{
+                          fontSize: 15,
+                          marginTop: 5,
+                          fontWeight: '500',
+                          marginBottom: '15px',
+                        }}>{this.state.piFileUpLoads[this.state.piFileUpLoadCurrentIndex].title || 'Title'}</span>
+                          <span
+                            style={{}}>{this.state.piFileUpLoads[this.state.piFileUpLoadCurrentIndex].text || 'Text'}</span>
+                        </div>
+                        {this.state.piFileUpLoads?.length > 1 && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "-22.5px",
+                              color: "#ffffff",
+                              width: 45,
+                              height: 45,
+                              borderRadius: "50%",
+                              backgroundColor: "#111111",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              fontSize: 20,
+                              cursor: "pointer"
+                            }}
+                            onClick={() => {
+                              let piFileUpLoadCurrentIndex = this.state.piFileUpLoadCurrentIndex || 0;
+                              piFileUpLoadCurrentIndex--;
+                              if (piFileUpLoadCurrentIndex < 0) {
+                                piFileUpLoadCurrentIndex = this.state.piFileUpLoads.length - 1;
+                              }
+                              this.setState({ piFileUpLoadCurrentIndex })
+                            }}
+                          >
+                            <i className="fa fa-arrow-left" style={{}}/>
+                          </div>)}
+                        {this.state.piFileUpLoads?.length > 1 && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              right: "-22.5px",
+                              color: "#ffffff",
+                              width: 45,
+                              height: 45,
+                              borderRadius: "50%",
+                              backgroundColor: "#111111",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              fontSize: 20,
+                              cursor: "pointer"
+                            }}
+                            onClick={() => {
+                              let piFileUpLoadCurrentIndex = this.state.piFileUpLoadCurrentIndex || 0;
+                              piFileUpLoadCurrentIndex++;
+                              if (piFileUpLoadCurrentIndex >= this.state.piFileUpLoads.length) {
+                                piFileUpLoadCurrentIndex = 0;
+                              }
+                              this.setState({ piFileUpLoadCurrentIndex })
+                            }}
+                          >
+                            <i className="fa fa-arrow-right" style={{}}/>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </PageContent>
+
+          {!!this.state.isLoading && (
+            <ProgressLoading
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: '#00000024',
+                transform: 'unset',
+              }}
+            />
+          )}
+        </div>
+      </TotPage>
+    );
+  }
+}
+Homepage = require('react-redux').connect((state, ownProps) => {
+    return {
+        userInfo: state.userInfo || {},
+    }
+},
+(dispatch) => ({
+    dispatch
+}))(Homepage);
+export default withNamespaces('common')(Homepage);

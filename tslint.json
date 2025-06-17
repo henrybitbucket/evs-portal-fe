@@ -1,0 +1,34 @@
+{
+    "extends": [
+        "tslint:latest",
+        "tslint-config-airbnb"
+    ],
+    "linterOptions": {
+        "exclude": [
+            ".next/**/*.*",
+            "next.config.js",
+            "i18nnext.ts",
+            "examples/**/*",
+            "coverage/**/*.*",
+            "jest.*.js",
+            "__mocks__/**/*.*"
+        ],
+        "typeCheck": true
+    },
+    "rules": {
+        "max-line-length": {
+            "options": [120]
+        },
+        "member-access": [true, "no-public"],
+        "import-name": false,
+        "ordered-imports": false,
+        "prefer-for-of": false,
+        "no-var-requires": false,
+        "align": [true, "statements", "members", "parameters"],
+        "variable-name": [true, "allow-pascal-case"],
+        "object-literal-sort-keys": [false],
+        "no-submodule-imports": [false],
+        "no-implicit-dependencies": [false],
+        "no-this-assignment": [true, {"allow-destructuring": true}]
+    }
+}

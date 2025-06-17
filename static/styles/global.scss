@@ -1,0 +1,311 @@
+@import './scss-in-theme/bootstrap.scss';
+@import './scss-in-theme/bootstrap-extend.scss';
+@import './scss-in-icons/web-icons.scss';
+@import './scss-in-theme/site.scss';
+@import './scss-in-lib/nprogress.scss';
+@import './scss-in-lib/toastr.scss';
+@import './scss-in-icons/font-awesome.scss';
+@import './scss-in-lib/react-datepicker-1.css';
+@import './scss-in-lib/react-datepicker.css';
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic');
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+
+.modal-dialog {
+  margin-top: 100px;
+}
+
+.navbar-right .dropdown-menu {
+  width: fit-content !important;
+}
+
+.hcp-item a[data-test='doctor-card-info-name'] {
+  white-space: nowrap;
+  word-break: break-word;
+}
+.hcp-item a[data-test='doctor-card-info-name'] h3 {
+  font-size: 17px;
+}
+
+@media screen and (min-width: 600px) {
+    .mobile-show {
+        display: none !important;
+    }
+}
+@media screen and (max-width: 600px) {
+  .hcp-item {
+      flex-direction: column !important;
+  }
+  .hcp-item div[data-test='doctor-card-photo'] {
+      margin-right: 15px !important;
+  }
+  .hcp-item img {
+      width: 100px;
+      height: 100px;
+  }
+  .hcp-item a h3 {
+      margin-top: 0px !important;
+  }
+
+  .hcp-item div[data-test='regular-text-section'] {
+      display: none;
+  }
+  footer > nav{
+      flex-direction: column !important;
+      padding: 15px !important;
+  }
+  .page-content > div > * {
+      //padding: 15px !important;
+  }
+  div.page-content.home div.find-doctor {
+    padding: 0px !important;
+    margin-top: 25px !important;
+  }
+  div.page-content.home div.find-doctor > div {
+    padding: 0px !important;
+  }
+  .page-content.home div.find-doctor > div > div {
+    padding: 0px !important;
+  }
+  div.page-content.home div.find-doctor > .header-span {
+    padding: 0px !important;
+    margin: 20px;
+  }
+
+  div[data-test='header-content'] {
+    flex-direction: column;
+  }
+
+  a[data-test='animated-header-logo'] > img {
+    width: 50px !important;
+    height: auto !important;
+  }
+  div[data-test='cta-content'] {
+    display: none !important;
+  }
+  div.page-content div[role='banner'] {
+    padding: 0px !important;
+    background: #ffffff;
+    min-height: 75px;
+  }
+  div.page-content div[role='banner'] .mobile-bars {
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  div.doctor-list {
+    padding: 0px !important;
+  }
+  div[data-test='video-visit-panel-card'] {
+    background: #fff !important;
+  }
+  div[data-test='video-visit-panel-card'] > div {
+    padding: 15px !important;
+    max-width: 100% !important;
+  }
+  div[data-test='video-visit-panel-card'] > div > span {
+   white-space: unset !important;
+  }
+  div[data-test='video-visit-panel-card'] a[data-test='video-visit-panel-button'] {
+   width: unset !important;
+  }
+  #join-partners-panel {
+    display: none !important;
+  }
+  .mobile-hide {
+    display: none !important;
+  }
+  .mobile-scroll {
+    overflow: auto !important;
+  }
+
+  .mobile-width-100px {
+    width: 100px !important;
+  }
+}
+
+.page-content > div > * {
+    max-width: 100%;
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+#footer {
+    padding: 0px !important;
+}
+
+/*-----------------------------*/
+
+
+.tree-view {
+  overflow-y: hidden;
+}
+
+.tree-view_item {
+  /* immediate child of .tree-view, for styling convenience */
+}
+
+/* style for the children nodes container */
+.tree-view_children {
+  margin-left: 16px;
+}
+
+.tree-view_children-collapsed {
+  height: 0px;
+}
+
+.tree-view_arrow {
+  cursor: pointer;
+  margin-right: 6px;
+  display: inline-block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.tree-view_arrow:after {
+  content: '▾';
+}
+
+/* rotate the triangle to close it */
+.tree-view_arrow-collapsed {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+
+
+.node {
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -ms-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  border-radius: 3px;
+}
+
+.node:hover {
+  background-color: rgb(220, 245, 243);
+  cursor: pointer;
+}
+
+.info, .node {
+  padding: 2px 10px 2px 5px;
+  font: 14px Helvetica, Arial, sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.scrollbar-black::-webkit-scrollbar {
+    width: 10px;
+    background-color: #313d44; }
+
+    .scrollbar-black::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    border: 1px solid #313d44;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #242f35;
+}
+
+.page-content {
+    padding: unset !important;
+}
+
+body {
+    padding-top: unset;
+}
+.site-menubar-unfold:not(.site-menubar-open) .has-sub > ul {
+    display: none !important;
+}
+
+.site-menubar-unfold:not(.site-menubar-open) .has-sub .site-menu-arrow {
+    display: none !important;
+}
+
+.checkbox {
+  font-size: 16px;
+  user-select: none;
+  min-height: 320px;
+  padding: 20px;
+  box-sizing: content-box;
+}
+
+.tree-leaf-list-item {
+  .tree-view-node {
+    padding-left: 20px !important;
+  }
+}
+
+.checkbox .tree,
+.checkbox .tree-node,
+.checkbox .tree-node-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.checkbox .tree-branch-wrapper,
+.checkbox .tree-node__leaf {
+  outline: none;
+}
+
+.checkbox .tree-node {
+  cursor: pointer;
+}
+
+.checkbox .tree-node .name:hover {
+  background: #ffffff;
+}
+
+.checkbox .tree-node--focused .name {
+  background: #ffffff;
+}
+
+.checkbox .tree-node {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.checkbox .checkbox-icon {
+  margin: 0 5px;
+  vertical-align: middle;
+}
+
+.checkbox button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  cursor: pointer;
+}
+
+.checkbox .arrow {
+  margin-left: 5px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-size: 28px;
+}
+
+.checkbox .arrow--open {
+  transform: rotate(90deg);
+  transition: all 0.1s;
+}

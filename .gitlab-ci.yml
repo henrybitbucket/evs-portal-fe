@@ -1,0 +1,38 @@
+stages:
+  - test
+  - deploy
+
+# lint and test
+
+testing phase:
+  stage: test
+  script:
+  - yarn
+  - yarn lint
+  - yarn test
+
+deploy to test:
+  stage: deploy
+  only:
+  - develop
+  script:
+  - yarn
+  - yarn build
+  - rm -rf /opt/source-test/.next
+  - rsync -varh $PWD/ /opt/source-test/
+  - pm2 restart tot-cms-internal-testing
+  - rm -rf /home/gitlab-runner/build/*
+
+  
+deploy to production:
+  stage: deploy
+  only:
+  - tags
+  script:
+  - yarn
+  - yarn build
+  - rm -rf /opt/source-production/.next
+  - rsync -varh $PWD/ /opt/source-production/
+  - pm2 restart tot-cms-internal
+  - rm -rf /home/gitlab-runner/build/*
+

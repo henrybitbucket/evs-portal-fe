@@ -1,0 +1,86 @@
+{
+
+	"presets": [
+		"@babel/preset-env",
+		[
+			"next/babel",
+			{
+				"styled-jsx": {
+					"plugins": [
+						"styled-jsx-plugin-sass"
+					]
+				}
+			}
+		],
+		"@zeit/next-typescript/babel",
+	],
+    "env": {
+        "development": {
+            "presets": [
+                [
+                    "next/babel",
+                    {
+                        "styled-jsx": {
+                            "plugins": [
+                                "styled-jsx-plugin-sass"
+                            ]
+                        }
+                    }
+                ],
+                "@zeit/next-typescript/babel"
+            ],
+
+            "plugins": [
+                [
+                    "module-resolver",
+                    {
+                        "alias": {
+                            "@app": "./"
+                        }
+                    }
+                ],
+                "inline-dotenv",
+                "transform-inline-environment-variables",
+                "inline-react-svg"
+            ]
+        },
+        "test": {
+            "presets": [
+                [
+                    "next/babel",
+                    {
+                        "preset-env": {
+                            "modules": "commonjs"
+                        }
+                    }
+                ],
+                "@zeit/next-typescript/babel"
+            ],
+        },
+        "production": {
+            "presets": [
+                ["next/babel", {
+                    "styled-jsx": {
+                        "plugins": [
+                            "styled-jsx-plugin-sass"
+                        ]
+                    }
+                }],
+                "@zeit/next-typescript/babel"
+            ],
+            "plugins": [
+                [
+                    "module-resolver",
+                    {
+                        "alias": {
+                            "@app": "./"
+                        }
+                    }
+                ],
+                "inline-dotenv",
+                "transform-inline-environment-variables",
+                "inline-react-svg"
+            ]
+        }
+    }
+}
