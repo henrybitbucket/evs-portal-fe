@@ -314,6 +314,7 @@ const styles = css`
             justify-content: center;
             font-size: 37px;
             font-weight: 600;
+            padding: 10px 0px;
         }
         .db-top-item-desc {
             font-size: 14px;
@@ -665,41 +666,60 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                 {/*  <span className="db-top-item-desc">{'Last reboot on: '}{this.props.systemStart?.value || ''}</span>*/}
                 {/*</div>*/}
                 <div className="db-top-item db-top-item-2">
+                  <span className="db-top-item-title">App Server Check</span>
+                  <span
+                    className="db-top-item-content"
+                    style={{ color: this.props.appServerCheck?.status === 'NOT_OK' ? 'red' : '' }}
+                  >
+                    {this.props.appServerCheck?.status || ''}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'Disk space (Free): '}{this.props.appServerCheck?.value ? this.props.appServerCheck?.value + ' GB' : 'N/A'}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'Disk space (Jan 1): '}{this.props.appServerCheck?.prevValue ? this.props.appServerCheck?.prevValue + ' GB' : 'N/A'}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'IP Address: '}{this.props.appServerCheck?.ipAddress || 'N/A'}
+                  </span>
+                  <span className="db-top-item-desc" style={{ color: this.props.appServerCheck?.valueCpu > 80 ? 'red' : '' }}>
+                    {'CPU: '}{(this.props.appServerCheck?.valueCpu || 0) + '%'}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'LastUp On: '}{this.props.appServerCheck?.lastUpTime ? moment(this.props.appServerCheck?.lastUpTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'LastDown On: '}{this.props.appServerCheck?.lastDownTime ? moment(this.props.appServerCheck?.lastDownTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
+                  </span>
+                </div>
+                <div className="db-top-item db-top-item-2">
                   <span className="db-top-item-title">Database Check</span>
                   <span
                     className="db-top-item-content"
                     style={{ color: this.props.dbCheck?.status === 'NOT_OK' ? 'red' : '' }}
                   >
-                  {this.props.dbCheck?.status || ''}
+                    {this.props.dbCheck?.status || ''}
                   </span>
-                    <span className="db-top-item-desc">
-                    {'Size: '}
-                      {!!this.props.dbCheck?.value ? this.props.dbCheck?.value + ' MB' : ''}
+                  <span className="db-top-item-desc">
+                    {'DB Size: '}{!!this.props.dbCheck?.value ? this.props.dbCheck?.value + ' MB' : ''}
                   </span>
-                    <span className="db-top-item-desc">
-                    {'IP Address: '}
-                      {this.props.appServerCheck?.DB_IP || ''}
+                  <span className="db-top-item-desc">
+                    {'Disk space (Free): '}{this.props.appServerCheck?.value ? this.props.appServerCheck?.value + ' GB' : 'N/A'}
                   </span>
-                </div>
-                <div className="db-top-item db-top-item-2">
-                  <span className="db-top-item-title">App Server Check</span>
-                  <span
-                    className="db-top-item-content"
-                    style={{ color: this.props.dbCheck?.status === 'NOT_OK' ? 'red' : '' }}
-                  >
-                  {this.props.dbCheck?.status || ''}
+                  <span className="db-top-item-desc">
+                    {'Disk space (LM): '}{this.props.dbCheck?.prevValue ? this.props.dbCheck?.prevValue + ' GB' : 'N/A'}
                   </span>
-                    <span className="db-top-item-desc">
-                    {'Disk space: '}
-                      {(this.props.appServerCheck?.DISK_FreeSpace || '0') + '/' + (this.props.appServerCheck?.DISK_TotalSpace || '0') + ' GB'}
+                  <span className="db-top-item-desc">
+                    {'IP Address: '}{this.props.dbCheck?.ipAddress || 'N/A'}
                   </span>
-                    <span className="db-top-item-desc">
-                    {'IP Address: '}
-                      {this.props.appServerCheck?.ipAddress2 || (!!this.props.appServerCheck?.ipAddress1 ? (this.props.appServerCheck?.ipAddress2 + ' (Private)') : '')}
+                  <span className="db-top-item-desc" style={{ color: this.props.appServerCheck?.valueCpu > 80 ? 'red' : '' }}>
+                    {'CPU: '}{(this.props.appServerCheck?.valueCpu || 0) + '%'}
                   </span>
-                    <span className="db-top-item-desc">
-                    {'CPU: '}
-                      {(this.props.appServerCheck?.cpuLoad || 0) + '%'}
+                  <span className="db-top-item-desc">
+                    {'LastUp On: '}{this.props.dbCheck?.lastUpTime ? moment(this.props.dbCheck?.lastUpTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'LastDown On: '}{this.props.dbCheck?.lastDownTime ? moment(this.props.dbCheck?.lastDownTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
                   </span>
                 </div>
                 <div className="db-top-item db-top-item-3" style={{flex: 'unset', minWidth: '360px'}}>
@@ -1557,7 +1577,7 @@ Homepage = require('react-redux').connect((state, ownProps) => {
     const dbCheck = state.header?.systemInformation?.find(f => f.key === 'DB_CHECK');
     const serverCertificate = state.header?.systemInformation?.find(f => f.key === 'SERVER_CERTIFICATE');
     const uptime = Math.round((new Date().getTime() - new Date(systemStart?.value).getTime()) / (24 * 60 * 60 * 1000)) + 1
-    const appServerCheck = state.header?.appServerCheck || {};
+    const appServerCheck = state.header?.systemInformation?.find(f => f.key === 'APP_SERVER_STATUS');
 
     return {
       alarms: state.header?.alarms || 0,
