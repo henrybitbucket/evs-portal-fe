@@ -674,7 +674,10 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     {this.props.appServerCheck?.status || ''}
                   </span>
                   <span className="db-top-item-desc">
-                    {'Disk space (Free): '}{this.props.appServerCheck?.value ? this.props.appServerCheck?.value + ' GB' : 'N/A'}
+                    {'Disk space (Free): '}
+                    {!!this.props.appServerCheck?.last2MonthValue ? `${moment().subtract(2, "month").format("MMMM")}: ${this.props.appServerCheck?.last2MonthValue} GB > ` : ''}
+                    {!!this.props.appServerCheck?.lastMonthValue ? `${moment().subtract(1, "month").format("MMMM")}: ${this.props.appServerCheck?.lastMonthValue} GB > ` : ''}
+                    {!!this.props.appServerCheck?.value ? `Now: ${this.props.appServerCheck?.value}  GB` : ''}
                   </span>
                   <span className="db-top-item-desc">
                     {'Disk space (Jan 1): '}{this.props.appServerCheck?.prevValue ? this.props.appServerCheck?.prevValue + ' GB' : 'N/A'}
@@ -701,13 +704,16 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     {this.props.dbCheck?.status || ''}
                   </span>
                   <span className="db-top-item-desc">
-                    {'DB Size: '}{!!this.props.dbCheck?.value ? this.props.dbCheck?.value + ' MB' : ''}
+                    {'DB Size: '}
+                    {!!this.props.dbCheck?.last2MonthValue ? `${moment().subtract(2, "month").format("MMMM")}: ${this.props.dbCheck?.last2MonthValue} MB > ` : ''}
+                    {!!this.props.dbCheck?.lastMonthValue ? `${moment().subtract(1, "month").format("MMMM")}: ${this.props.dbCheck?.lastMonthValue} MB > ` : ''}
+                    {!!this.props.dbCheck?.value ? `Now: ${this.props.dbCheck?.value}  MB` : ''}
                   </span>
                   <span className="db-top-item-desc">
-                    {'Disk space (Free): '}{this.props.appServerCheck?.value ? this.props.appServerCheck?.value + ' GB' : 'N/A'}
-                  </span>
-                  <span className="db-top-item-desc">
-                    {'Disk space (LM): '}{this.props.dbCheck?.prevValue ? this.props.dbCheck?.prevValue + ' GB' : 'N/A'}
+                    {'Disk space (Free): '}
+                    {!!this.props.appServerCheck?.last2MonthValue ? `${moment().subtract(2, "month").format("MMMM")}: ${this.props.appServerCheck?.last2MonthValue} GB > ` : ''}
+                    {!!this.props.appServerCheck?.lastMonthValue ? `${moment().subtract(1, "month").format("MMMM")}: ${this.props.appServerCheck?.lastMonthValue} GB > ` : ''}
+                    {!!this.props.appServerCheck?.value ? `Now: ${this.props.appServerCheck?.value}  GB` : ''}
                   </span>
                   <span className="db-top-item-desc">
                     {'IP Address: '}{this.props.dbCheck?.ipAddress || 'N/A'}
