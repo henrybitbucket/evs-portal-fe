@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef} from 'react';
 import Router from 'next/router';
 import css from 'styled-jsx/css';
 import I18nLink from '@app/components/I18nLink';
@@ -9,7 +9,6 @@ import { getMenuItems, getUserPermissions } from '@app/api/user';
 import { getStoreBetweenPageTransitions, isServer } from "@app/utils";
 import configureStore from "@app/redux/store";
 import { getCookie } from "@app/utils/cookie";
-import { toggleSiteMenu } from "@app/redux/site-menu/actions";
 
 const styles = css`
   .site-menubar {
@@ -20,6 +19,8 @@ const styles = css`
     }
   }
 `;
+
+const MENU_BAR_WIDTH = "menuBarWidth";
 
 class MenuBar extends React.Component<INavbarHeaderProps, any> {
 
@@ -41,7 +42,16 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       userInfo,
       isDms,
       appCode,
+      isResizing: false,
+      initialX: 0,
+      menuBarMinWidth: 370,
+      menuBarMaxWidth: window.innerWidth / 2,
+      width: Number(localStorage.getItem(MENU_BAR_WIDTH)) || 370,
     }
+
+    this.container = createRef();
+    this.minWidth = 370;
+    this.maxWidth = window.innerWidth * 0.95;
 
     this.state.userCollapse =
       /\/user-list*/g.test(path) ||
@@ -81,6 +91,125 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       /\/p2-provisioning-report*/g.test(path);
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+    document.removeEventListener("mousemove", this.handleMouseMove);
+    document.removeEventListener("mouseup", this.handleMouseUp);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.isResizing && !prevState.isResizing) {
+      document.addEventListener("mousemove", this.handleMouseMove);
+      document.addEventListener("mouseup", this.handleMouseUp);
+    } else if (!this.state.isResizing && prevState.isResizing) {
+      document.removeEventListener("mousemove", this.handleMouseMove);
+      document.removeEventListener("mouseup", this.handleMouseUp);
+    }
+    if (this.props.isOpenSideMenu || this.props.isToggle) {
+      const localWidth = localStorage.getItem(MENU_BAR_WIDTH);
+      document.getElementsByClassName("site-menubar-body")?.length && document.getElementsByClassName("site-menubar-body")[0].setAttribute(
+        "style",
+        `width: ${localWidth}px !important;`
+      );
+      document.getElementsByClassName("site-menubar-footer")?.length && document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
+        "style",
+        `width: ${localWidth}px !important;`
+      );
+      document.getElementsByClassName("site-menubar")?.length && document.getElementsByClassName("site-menubar")[0].setAttribute(
+        "style",
+        `width: ${localWidth}px !important;`
+      )
+      document.getElementsByClassName("navbar-header")?.length && document.getElementsByClassName("navbar-header")[0].setAttribute(
+        "style",
+        `width: ${localWidth}px !important;`
+      )
+      document.getElementsByClassName("page")[0].setAttribute(
+        "style",
+        `margin-left: ${localWidth}px !important;`
+      )
+    } else {
+      document.getElementsByClassName("site-menubar-body")?.length && document.getElementsByClassName("site-menubar-body")[0].removeAttribute(
+        "style"
+      );
+      document.getElementsByClassName("site-menubar-footer")?.length && document.getElementsByClassName("site-menubar-footer")[0].removeAttribute(
+        "style"
+      );
+      document.getElementsByClassName("site-menubar")?.length && document.getElementsByClassName("site-menubar")[0].removeAttribute(
+        "style"
+      )
+      document.getElementsByClassName("navbar-header")?.length && document.getElementsByClassName("navbar-header")[0].removeAttribute(
+        "style"
+      )
+      document.getElementsByClassName("page") && document.getElementsByClassName("page")[0].removeAttribute(
+        "style"
+      )
+    }
+  }
+
+  handleResize = () => {
+    if (this.container.current) {
+      const monitorWidth = screen.width;
+      const screenWidth = window.innerWidth;
+      const width = Number(window.sessionStorage.getItem(MENU_BAR_WIDTH));
+      const currentWidth = width && width > 0 ? width * screenWidth : 800;
+      if (screenWidth / monitorWidth < 0.3) {
+        this.setState({
+          width: screenWidth > this.minWidth ? screenWidth : this.minWidth,
+        })
+      } else {
+        this.setState({
+          width: currentWidth > this.minWidth ? currentWidth : this.minWidth,
+        })
+      }
+      this.maxWidth = screenWidth * 0.95;
+    }
+  };
+
+  handleMouseDown = (e: any) => {
+    this.setState({
+      isResizing: true,
+      initialX: e.clientX,
+    })
+    document.getElementsByClassName("main-layout")[0].setAttribute(
+      "style",
+      `user-select: none;`
+      )
+  };
+
+  handleMouseUp = () => {
+    this.setState({ isResizing: false });
+    document.getElementsByClassName("main-layout")[0].setAttribute(
+      "style",
+      `user-select: auto;`
+    )
+  };
+
+  handleMouseMove = (e: MouseEvent) => {
+    if (this.state.isResizing && e.clientX > this.state.menuBarMinWidth && e.clientX < this.state.menuBarMaxWidth) {
+      document.getElementsByClassName("site-menubar-body")[0].setAttribute(
+        "style",
+        `width: ${e.clientX}px !important;`
+      );
+      document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
+        "style",
+        `width: ${e.clientX}px !important;`
+      );
+      document.getElementsByClassName("site-menubar")[0].setAttribute(
+        "style",
+        `width: ${e.clientX}px !important;`
+      )
+      document.getElementsByClassName("navbar-header")[0].setAttribute(
+        "style",
+        `width: ${e.clientX}px !important;`
+      )
+      document.getElementsByClassName("page")[0].setAttribute(
+        "style",
+        `margin-left: ${e.clientX}px !important;`
+      )
+      localStorage.setItem(MENU_BAR_WIDTH, e.clientX.toString());
+    }
+  };
+
   logOut = async () => {
     await this.props.logOut();
     console.info('RD /auth/signin logOut MenuBar 169')
@@ -90,6 +219,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   componentDidMount() {
     this.searchGroup();
     this.getMenuItems();
+    window.addEventListener("resize", this.handleResize);
   }
 
   async getMenuItems() {
@@ -168,170 +298,190 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   }
 
   render() {
+    const { isResizing } = this.state;
     return (
       <>
         {this.state.permissions != null ?
           <div
             className="site-menubar menu"
-            // onMouseOver={() => console.log("props", this.props)}
-            // onMouseLeave={() => console.log("props", this.props)}
             onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
             onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
           >
-            <style jsx>{styles}</style>
-            <div className="site-menubar-body">
-              <div style={{
-                height: '78px',
-                display: 'flex',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                flexDirection: 'row',
-                padding: '20px',
-                position: 'ralative',
-              }}>
-                <img
-                  src={`${'static/images/' + this.state.appCode + '.png'}`}
-                  style={{ height: '38px', width: '38px', objectFit: 'contain', cursor: 'pointer' }}
-                  onClick={() => {
-                    require('@app/utils/next-routes').Router.pushRoute('/');
-                  }}
-                />
-                <div
-                  className='app_name'
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <div
-                    className=""
-                    style={{
-                      color: '#fff',
-                      fontSize: '12px',
-                      fontWeight: '400',
-                      paddingLeft: '20px',
+            <div
+              ref={this.container}
+              className={`relative h-full ${isResizing ? "select-none" : ""}`}
+            >
+               <div
+                onMouseDown={this.handleMouseDown}
+                style={{
+                  position: 'absolute',
+                  zIndex: 1000,
+                  bottom: 0,
+                  right: 0,
+                  height: '100%',
+                  width: '5px',
+                  cursor: 'ew-resize',
+                }}
+              />
+              <div
+                className="site-menubar-body"
+              >
+                <div style={{
+                  height: '78px',
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  padding: '20px',
+                  position: 'ralative',
+                }}>
+                  <img
+                    src={`${'static/images/' + this.state.appCode + '.png'}`}
+                    style={{ height: '38px', width: '38px', objectFit: 'contain', cursor: 'pointer' }}
+                    onClick={() => {
+                      require('@app/utils/next-routes').Router.pushRoute('/');
                     }}
-                  >{'Admin'}</div>
+                  />
                   <div
-                    className=""
+                    className='app_name'
                     style={{
-                      color: '#fff',
-                      fontSize: '10px',
-                      fontWeight: '400',
-                      paddingLeft: '20px',
-                      opacity: '0.5',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'flex-start',
+                      flexDirection: 'column',
                     }}
-                  ><i className='fa fa-map-marker' style={{ marginRight: '5px', }}/>Singapore
-                  </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: '15px',
-                      fontSize: '18px',
-                      color: '#fff'
-                    }}>
-                    <i className="fa fa-gear"/>
+                  >
+                    <div
+                      className=""
+                      style={{
+                        color: '#fff',
+                        fontSize: '12px',
+                        fontWeight: '400',
+                        paddingLeft: '20px',
+                      }}
+                    >{'Admin'}</div>
+                    <div
+                      className=""
+                      style={{
+                        color: '#fff',
+                        fontSize: '10px',
+                        fontWeight: '400',
+                        paddingLeft: '20px',
+                        opacity: '0.5',
+                      }}
+                    ><i className='fa fa-map-marker' style={{ marginRight: '5px', }}/>Singapore
+                    </div>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        right: '15px',
+                        fontSize: '18px',
+                        color: '#fff'
+                      }}>
+                      <i className="fa fa-gear"/>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <ul
-                className="site-menu scrollbar-black"
-                data-plugin="menu"
-                style={{ maxHeight: '100%', overflow: 'auto', paddingBottom: '50px' }}
-              >
-                {(this.state.menuItems || []).map((it, idx) => {
-                  return (
-                    it.children?.length ? (this.showMenu(it) ? (
-                      <li
-                        className={
-                          "site-menu-item has-sub " +
-                          (!!this.state.userCollapse && it.id === 'user-management' ||
-                          !!this.state.deviceManagementCollapse && it.id === 'device-management'  ||
-                          !!this.state.buildingCollapse && it.id === 'address-management'  ||
-                          !!this.state.reportCollapse && it.id === 'report-management'  ||
-                          !!this.state.p2Collapse && it.id === 'p2-provisioning'  ||
-                          it.status === 'open' ? 'open' : '')
-                        }
-                        key={idx + '_'}>
-                        <a
-                          href="javascript:void(0)"
-                          onClick={() => {
-                            it.status = it.status === 'open' ? ''
-                              : (!!this.state.userCollapse && it.id === 'user-management'  ||
+                <ul
+                  className="site-menu scrollbar-black"
+                  data-plugin="menu"
+                  style={{ maxHeight: '100%', overflow: 'auto', paddingBottom: '50px' }}
+                >
+                  {(this.state.menuItems || []).map((it, idx) => {
+                    return (
+                      it.children?.length ? (this.showMenu(it) ? (
+                          <li
+                            className={
+                              "site-menu-item has-sub " +
+                              (!!this.state.userCollapse && it.id === 'user-management' ||
                               !!this.state.deviceManagementCollapse && it.id === 'device-management'  ||
                               !!this.state.buildingCollapse && it.id === 'address-management'  ||
                               !!this.state.reportCollapse && it.id === 'report-management'  ||
-                              !!this.state.p2Collapse && it.id === 'p2-provisioning'
-                                ? '' : 'open');
-                            this.setState({
-                              menuItems: [].concat(this.state.menuItems),
-                              userCollapse: false,
-                              deviceManagementCollapse: false,
-                            });
-                          }}
-                        >
-                          <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true"/>
-                          <span className="site-menu-title">{it.displayLabel || it.name}</span>
-                          <span className="site-menu-arrow"/>
-                        </a>
-                        <ul className="site-menu-sub">
-                          {it.children.map((subIt, subIdx) => {
-                            return (
-                              this.showMenu(subIt) ? (
-                                  <I18nLink
-                                    activeClassName="active"
-                                    href={subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
-                                    index={idx + '_' + subIdx} key={idx + '_' + subIdx}>
-                                    <li className="site-menu-item">
-                                      <a href="javascript:void(0)"
-                                         style={{
-                                           color: '#fff',
-                                           backgroundColor: 'inherit',
-                                           paddingLeft: '55px',
-                                         }}
-                                         onClick={() => {
-                                           require('@app/utils/next-routes').Router.pushRoute(subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
-                                         }}
-                                      >
-                                        <i className={"site-menu-icon " + (subIt.className || "").replace('fa-fw', '')} aria-hidden="true"/>
-                                        <span className="site-menu-title">{subIt.displayLabel || subIt.name}</span>
-                                      </a>
-                                    </li>
-                                  </I18nLink>
-                              ) : null )
-                          })}
-                        </ul>
-                      </li>
-                      ) : null)
-                    : (this.showMenu(it) ? (
-                        <I18nLink
-                          activeClassName={!!this.state.dashboardCollapse ? 'active' : 'none'}
-                          href={it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
-                          index={idx + '_'} key={idx + '_'}>
-                          <li className="site-menu-item">
+                              !!this.state.p2Collapse && it.id === 'p2-provisioning'  ||
+                              it.status === 'open' ? 'open' : '')
+                            }
+                            key={idx + '_'}>
                             <a
                               href="javascript:void(0)"
-                              style={{
-                                color: '#fff',
-                                backgroundColor: 'inherit'
-                              }}
                               onClick={() => {
-                                require('@app/utils/next-routes').Router.pushRoute(it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
+                                it.status = it.status === 'open' ? ''
+                                  : (!!this.state.userCollapse && it.id === 'user-management'  ||
+                                  !!this.state.deviceManagementCollapse && it.id === 'device-management'  ||
+                                  !!this.state.buildingCollapse && it.id === 'address-management'  ||
+                                  !!this.state.reportCollapse && it.id === 'report-management'  ||
+                                  !!this.state.p2Collapse && it.id === 'p2-provisioning'
+                                    ? '' : 'open');
+                                this.setState({
+                                  menuItems: [].concat(this.state.menuItems),
+                                  userCollapse: false,
+                                  deviceManagementCollapse: false,
+                                });
                               }}
                             >
                               <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true"/>
-                              <span className="site-menu-title">{it.name}</span>
+                              <span className="site-menu-title">{it.displayLabel || it.name}</span>
+                              <span className="site-menu-arrow"/>
                             </a>
+                            <ul className="site-menu-sub">
+                              {it.children.map((subIt, subIdx) => {
+                                return (
+                                  this.showMenu(subIt) ? (
+                                    <I18nLink
+                                      activeClassName="active"
+                                      href={subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
+                                      index={idx + '_' + subIdx} key={idx + '_' + subIdx}>
+                                      <li className="site-menu-item">
+                                        <a href="javascript:void(0)"
+                                           style={{
+                                             color: '#fff',
+                                             backgroundColor: 'inherit',
+                                             paddingLeft: '55px',
+                                           }}
+                                           onClick={() => {
+                                             require('@app/utils/next-routes').Router.pushRoute(subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
+                                           }}
+                                        >
+                                          <i className={"site-menu-icon " + (subIt.className || "").replace('fa-fw', '')} aria-hidden="true"/>
+                                          <span className="site-menu-title">{subIt.displayLabel || subIt.name}</span>
+                                        </a>
+                                      </li>
+                                    </I18nLink>
+                                  ) : null )
+                              })}
+                            </ul>
                           </li>
-                        </I18nLink>
-                      ) : null)
-                  )
-                })}
-              </ul>
+                        ) : null)
+                        : (this.showMenu(it) ? (
+                          <I18nLink
+                            activeClassName={!!this.state.dashboardCollapse ? 'active' : 'none'}
+                            href={it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
+                            index={idx + '_'} key={idx + '_'}>
+                            <li className="site-menu-item">
+                              <a
+                                href="javascript:void(0)"
+                                style={{
+                                  color: '#fff',
+                                  backgroundColor: 'inherit'
+                                }}
+                                onClick={() => {
+                                  require('@app/utils/next-routes').Router.pushRoute(it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
+                                }}
+                              >
+                                <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true"/>
+                                <span className="site-menu-title">{it.name}</span>
+                              </a>
+                            </li>
+                          </I18nLink>
+                        ) : null)
+                    )
+                  })}
+                </ul>
+              </div>
             </div>
-            <div className="site-menubar-footer">
+            <style jsx>{styles}</style>
+            <div
+              className="site-menubar-footer"
+            >
               <a
                 href="javascript: void(0);" className="fold-show" data-placement="top" data-toggle="tooltip"
                 data-original-title="Settings"

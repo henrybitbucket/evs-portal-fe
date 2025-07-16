@@ -210,8 +210,8 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
-          <div className="navbar-brand navbar-brand-center" data-toggle="gridmenu" style={{width: '100%'}}>
-            <div style={{minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}} className='group-brand-logo'>
+          <div className="navbar-brand navbar-brand-center" data-toggle="gridmenu" style={{width: '100%', padding: "unset"}}>
+            <div style={{minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%'}} className='group-brand-logo'>
               <img className="navbar-brand-logo" src="/static/images/logo2.png" title="Remark" style={{}} />
               <div
                 style={{

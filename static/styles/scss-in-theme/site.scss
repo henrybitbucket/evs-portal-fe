@@ -180,11 +180,11 @@ body {
 
 .site-menu-title {
   display: inline-block;
-  max-width: 270px;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
+  width: 100% !important;
+  max-width: fit-content !important;
 }
 
 .site-menu-arrow {
