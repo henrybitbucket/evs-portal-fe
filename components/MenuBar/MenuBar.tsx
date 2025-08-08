@@ -44,13 +44,13 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       appCode,
       isResizing: false,
       initialX: 0,
-      menuBarMinWidth: 370,
+      menuBarMinWidth: 80,
       menuBarMaxWidth: window.innerWidth / 2,
-      width: Number(localStorage.getItem(MENU_BAR_WIDTH)) || 370,
+      width: Number(localStorage.getItem(MENU_BAR_WIDTH)) || 80,
     }
 
     this.container = createRef();
-    this.minWidth = 370;
+    this.minWidth = 80;
     this.maxWidth = window.innerWidth * 0.95;
 
     this.state.userCollapse =
@@ -109,23 +109,23 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       const localWidth = localStorage.getItem(MENU_BAR_WIDTH);
       document.getElementsByClassName("site-menubar-body")?.length && document.getElementsByClassName("site-menubar-body")[0].setAttribute(
         "style",
-        `width: ${localWidth}px !important;`
+        `width: ${localWidth}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar-footer")?.length && document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
         "style",
-        `width: ${localWidth}px !important;`
+        `width: ${localWidth}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar")?.length && document.getElementsByClassName("site-menubar")[0].setAttribute(
         "style",
-        `width: ${localWidth}px !important;`
+        `width: ${localWidth}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("navbar-header")?.length && document.getElementsByClassName("navbar-header")[0].setAttribute(
         "style",
-        `width: ${localWidth}px !important;`
+        `width: ${localWidth}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("page")[0].setAttribute(
         "style",
-        `margin-left: ${localWidth}px !important;`
+        `margin-left: ${localWidth}px !important; min-width: unset !important;`
       )
     } else {
       document.getElementsByClassName("site-menubar-body")?.length && document.getElementsByClassName("site-menubar-body")[0].removeAttribute(
@@ -188,23 +188,23 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     if (this.state.isResizing && e.clientX > this.state.menuBarMinWidth && e.clientX < this.state.menuBarMaxWidth) {
       document.getElementsByClassName("site-menubar-body")[0].setAttribute(
         "style",
-        `width: ${e.clientX}px !important;`
+        `width: ${e.clientX}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
         "style",
-        `width: ${e.clientX}px !important;`
+        `width: ${e.clientX}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar")[0].setAttribute(
         "style",
-        `width: ${e.clientX}px !important;`
+        `width: ${e.clientX}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("navbar-header")[0].setAttribute(
         "style",
-        `width: ${e.clientX}px !important;`
+        `width: ${e.clientX}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("page")[0].setAttribute(
         "style",
-        `margin-left: ${e.clientX}px !important;`
+        `margin-left: ${e.clientX}px !important; min-width: unset !important;`
       )
       localStorage.setItem(MENU_BAR_WIDTH, e.clientX.toString());
     }

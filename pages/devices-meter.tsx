@@ -984,6 +984,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
         data.msn = /*this.state.detailsData.msn*/ it.msn; //original msn
         data.group = this.state.detailsData.group?.id;
         data.installer = this.state.detailsData.installer?.userId;
+        data.account = this.state.detailsData.account?.userId;
 
         // original address
         data.buildingId = it.building?.id ? it.building.id : null;
@@ -1147,7 +1148,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
   render() {
     this.state.updated = true;
     return (
-      <TotPage title={'Devices (Meter)'}>
+      <TotPage title={'Devices (Meter and Coupled Addr)'}>
         <div className="dashboard">
           <style jsx>{styles}</style>
           <PageContent>
@@ -1368,7 +1369,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     fontSize: '18px',
                     color: '#000000'
                   }}>
-                    <span>{'Device Management'} <i className="fa fa-caret-right ml-5 mr-5"/> {'Devices (Meter)'}</span>
+                    <span>{'Device Management'} <i className="fa fa-caret-right ml-5 mr-5"/> {'Devices (Meter and Coupled Addr)'}</span>
                     <h5 className="site-title">{'Devices (Meter)'}</h5>
                   </div>
                   <div
@@ -2123,6 +2124,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                               queryVendor,
                               advancedSearch,
                               downloadCsv: true,
+                              includeMcuSn: true
                             }
                           };
                           const url = '/api/meters' + '?timeZone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -2161,16 +2163,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                       </div>
                       <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
                       <div
-                        data-tip="Import meter"
-                        className="button-btn ml-10 w-max px-10"
-                        onClick = {() => {
-                          this.setState({openUploadMeter: true, importChx: {skip: false, override: true}});
-                        }}
-                      >
-                        <span>{'METER IMPORT'}</span>
-                      </div>
-                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
-                      <div
                         data-tip="Export by upload"
                         className="button-btn ml-10 w-max px-10"
                         style={{width: 'unset', paddingLeft: '15px', paddingRight: '15px'}}
@@ -2182,14 +2174,36 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                       </div>
                       <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
                       <div
-                        data-tip="Import Link/UnLink"
+                        data-tip="P2 Import"
                         className="button-btn ml-10 w-max px-10"
                         style={{width: 'unset', paddingLeft: '15px', paddingRight: '15px'}}
                         onClick = {() => {
                           this.setState({openUploadLinkMSN: true, importChx: {skip: false, override: true}});
                         }}
                       >
-                        <span>{'LINK-UNLINK MSN IMPORT'}</span>
+                        <span>{'P2 IMPORT'}</span>
+                      </div>
+                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                      <div
+                        data-tip="P2 Import"
+                        className="button-btn ml-10 w-max px-10"
+                        style={{width: 'unset', paddingLeft: '15px', paddingRight: '15px'}}
+                        onClick = {() => {
+                          this.setState({openUploadMeter: true, importChx: {skip: false, override: true}});
+                        }}
+                      >
+                        <span>{'P3 IMPORT'}</span>
+                      </div>
+                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                      <div
+                        data-tip="Account Import"
+                        className="button-btn ml-10 w-max px-10"
+                        style={{width: 'unset', paddingLeft: '15px', paddingRight: '15px'}}
+                        onClick = {() => {
+                          this.setState({openUploadAccount: true, importChx: {skip: false, override: true}});
+                        }}
+                      >
+                        <span>{'ACCOUNT IMPORT'}</span>
                       </div>
                     </div>
                   </div>
@@ -2205,6 +2219,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                         <thead className="thead-dark">
                         <tr>
                           <th className="table-th" scope="col">MSN</th>
+                          <th className="table-th" scope="col">User Account</th>
                           <th className="table-th" scope="col">MCU SN</th>
                           <th className="table-th" scope="col">MCU UUID</th>
                           <th className="table-th" scope="col">ESIM ID</th>
@@ -2249,6 +2264,9 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                               >
                                 <td className="table-td">
                                   <span>{it.msn}</span>
+                                </td>
+                                <td className="table-td">
+                                  <span>{it.userAccount}</span>
                                 </td>
                                 <td className="table-td">
                                   {it.sn}
@@ -2343,6 +2361,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                       await this.getProjectTags();
                                       const rpDeviceGroups = [];
                                       const rpInstallerUsers = [];
+                                      const rpAllUsers = [];
                                       this.setState({
                                         addressType: !!it.building?.id ? 'apartment' : 'other',
                                         selectedDevice: { ...it },
@@ -2382,6 +2401,10 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                           };
                                           rpInstallerUsers.push(item);
                                         }
+                                        rpAllUsers.push({
+                                          value: rp.id,
+                                          label: rp.username,
+                                        });
                                       });
                                       let deviceDetail = await getAllMeterDevices({
                                         options: {
@@ -2396,6 +2419,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                         detailsDataOriginal: (deviceDetail?.response?.results || [])[0] || it,
                                         rpDeviceGroups,
                                         rpInstallerUsers,
+                                        rpAllUsers
                                       });
 
                                       const buildings = await getBuilding({ limit: 10000 });
@@ -2861,7 +2885,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
               >
                 <CloseButton className="w-5 h-5" onClick={() => this.setState({openUploadLinkMSN: false})}/>
                 <Typography variant="h6" component="h2" style={{marginBottom: '20px'}}>
-                  Upload Link-Unlink CSV file
+                  Upload P2 Couple/Decouple csv file
                 </Typography>
 
                 <input
@@ -3016,6 +3040,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     this.setState({ file4Export: event.target.files[0] });
                   }}
                 />
+                <a style={{textDecoration: 'underline'}} download href={'/api/mcu-sn/template'} target='_blank'>Download template</a>
                 {this.state.validateFile4Export === false ?
                   <small className="help-block"
                     style={{
@@ -3099,6 +3124,129 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     }}
                     onClick = {() => {
                       this.setState({openExportByUpload: false, file4Export: null,});
+                    }}
+                  >
+                    <span>{'CLOSE'}</span>
+                  </div>
+                </div>
+              </Box>
+            </Modal>
+            <Modal open={this.state.openUploadAccount}>
+              <Box
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 700,
+                  backgroundColor: '#fff',
+                  borderRadius: '4px',
+                  boxShadow: '0 5px 10px rgba(0, 0, 0, 0.45)',
+                  padding: '20px',
+                }}
+              >
+                <CloseButton className="w-5 h-5" onClick={() => this.setState({openUploadAccount: false})}/>
+                <Typography variant="h6" component="h2" style={{marginBottom: '20px'}}>
+                  Upload account
+                </Typography>
+                <div
+                  style={{width: '100%', display: 'flex', flexDirection: 'column'}}
+                >
+                  <input
+                    style={{marginBottom: '5px'}}
+                    type="file"
+                    placeholder={'File upload'}
+                    accept=".csv, .txt"
+                    onChange={(event) => {
+                      this.setState({ file4Export: event.target.files[0] });
+                    }}
+                  />
+                  <a style={{textDecoration: 'underline'}} download href={'/api/account/template'} target='_blank'>Download template</a>
+                </div>
+                {this.state.validateFile4Export === false ?
+                  <small
+                    className="help-block"
+                    style={{
+                      color: '#eb0000',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      marginLeft: '15px',
+                    }}
+                  >
+                    {!this.state.file4Export ? 'File is required' : ''}
+                  </small>
+                  : null}
+                <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
+                  <div
+                    style={{ marginLeft: '0px', margin: 'unset' }}
+                    className="button-btn w-80"
+                    onClick={async () => {
+
+                      if (!this.state.file4Export) {
+                        this.setState({
+                          validateFile4Export: false,
+                        })
+                        return;
+                      }
+                      const result = await Swal.fire({
+                        html: "<p style='text-align: center; font-size: 14px;'>Are you sure?</p>",
+                        icon: 'question',
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'Cancel',
+                        showCancelButton: true,
+                        customClass: {
+                          container: "custom-swal-container"
+                        }
+                      });
+                      if (!result || !result.isConfirmed) return;
+                      this.setState({loading: true});
+                      const formData = new FormData();
+                      formData.append('file', this.state.file4Export, this.state.file4Export.name);
+                      const url = 'api/import-account/upload' + '?timeZone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+                      const method = 'POST';
+                      let rp = await fetch(url,
+                        {
+                          method,
+                          body: formData,
+                          headers: new Headers({
+                            'Authorization': getCookie(tokenName),
+                          }),
+                        },
+                      )
+                        .then((response) => {
+                          return response.blob();
+                        });
+                      if (rp) {
+                        const tag = moment(new Date()).format('YYYYMMDDHHmmss');
+                        const fileName = 'import-account-result-' + tag + '.csv';
+                        const url = window.URL.createObjectURL(new Blob([rp]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.parentNode.removeChild(link);
+                        this.setState({ openUploadAccount: false, file4Export: undefined });
+                      } else {
+                        alert('Something went wrong. Please try again!');
+                      }
+                      this.setState({loading: false});
+                    }}
+                  >
+                    <span>{'IMPORT'}</span>
+                  </div>
+                  <div
+                    className="button-btn"
+                    style = {{
+                      cursor: 'pointer', display: 'flex',
+                      justifyContent: 'center', alignItems: 'center',
+                      border: '0.5px solid #007bff',
+                      height: '40px',
+                      fontSize: '14px', width: 'fit-content', padding: '15px',
+                      marginLeft: '10px'
+                    }}
+                    onClick = {() => {
+                      this.setState({openUploadAccount: false, file4Export: null,});
                     }}
                   >
                     <span>{'CLOSE'}</span>
@@ -4092,6 +4240,18 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                         padding: '10px',
                         border: '1px solid #e6e6e6'
                       }}>
+                        {'Account'}
+                      </th>
+                      <th style={{
+                        backgroundColor: '#f7f7f7',
+                        color: '#000',
+                        fontWeight: '400',
+                        fontSize: '14px',
+                        width: '180px',
+                        maxWidth: '180px',
+                        padding: '10px',
+                        border: '1px solid #e6e6e6'
+                      }}>
                         {!!this.state.detailsData?.uid ? 'P2 Coupled Time / Coupled User' : 'P2 De-Coupled Time / De-Coupled User'}
                       </th>
                       <th style={{
@@ -4131,6 +4291,30 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                         ) : (
                           <span style={{paddingLeft: '10px'}}>{this.state.detailsData.msn}</span>
                         )}
+                      </th>
+                      <th style={{ color: '#000', fontWeight: '300', fontSize: '14px', border: '1px solid #e6e6e6' }}>
+                        <select
+                          style={{ outline: 'unset', width: '100%', height: '35px', pointerEvents: !!this.state.detailsData?.uid ? undefined : 'none' }}
+                          className="select-installer-user"
+                          value={this.state.detailsData.account?.userId || ''}
+                          onChange={(event) => {
+                            this.setState({
+                              detailsData: {
+                                ...this.state.detailsData,
+                                account: {
+                                  ...this.state.detailsData.account,
+                                  userId: !!event.target.value ? parseInt(event.target.value) : null
+                                }
+                              },
+                              updated: true,
+                            });
+                          }}
+                        >
+                          <option value="">{'Select user account'}</option>
+                          {this.state.rpAllUsers.map(rdg => (
+                            <option key={rdg.value} value={rdg.value}>{rdg.value + " - " + rdg.label}</option>
+                          ))}
+                        </select>
                       </th>
                       <th style={{
                         color: '#000',
@@ -5504,9 +5688,9 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   padding: '15px 15px 15px 15px',
                 }}
               >
-                          <span style={{ fontWeight: 500, fontSize: '18px' }}>
-                              {'Export CSV'}
-                          </span>
+                <span style={{ fontWeight: 500, fontSize: '18px' }}>
+                  {'Export CSV'}
+                </span>
                 <div
                   style={{
                     display: 'flex',
