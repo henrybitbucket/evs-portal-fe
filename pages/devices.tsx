@@ -5,42 +5,43 @@ import { TotPage } from '@app/components/TotPage';
 import { IBasicPageProps } from '@app/components/Types';
 import moment from 'moment';
 import 'moment-timezone';
-import { getCookie, eraseCookie } from '@app/utils/cookie';
+import { getCookie } from '@app/utils/cookie';
 import { tokenName } from '@app/utils/public-config';
 import {
   editDevice,
-  getAllDevices,
-  getRelatedLogs,
-  sendCommand,
-  getMeterLogs,
-  getDeviceGroups,
   editGroup,
-  getPiLogs,
-  getFloorLevels,
-  getBuildingUnits,
-  getBuilding,
-  unLinkMsn,
-  removeEVSDevice,
+  getAllDevices,
   getBlockOfBuilding,
-  getVendors,
-  getFiles,
-  getLastSubmit,
-  sendRLSCommandForDevices,
-  getProjectTags,
-  getPiClients,
-  validateLoginPwd,
+  getBuilding,
+  getBuildingUnits,
   getDeviceFilters,
+  getDeviceGroups,
+  getFiles,
+  getFloorLevels,
+  getLastSubmit,
+  getMeterLogs,
+  getPiClients,
+  getPiLogs,
+  getProjectTags,
+  getRelatedLogs,
+  getVendors,
+  removeEVSDevice,
   saveDeviceFilters,
+  sendCommand,
+  sendRLSCommandForDevices,
+  unLinkMsn,
+  validateLoginPwd,
 } from '@app/api/log';
-import { Pagination, ProgressLoading, SelectCustom, Radio } from '@app/components/Common';
+import { Pagination, ProgressLoading, Radio, SelectCustom } from '@app/components/Common';
 import { PageContent } from '@app/components/PageContent';
 import ReactTooltip from 'react-tooltip';
 import { Chart } from 'react-google-charts';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import {getUserPermissions, getUsers} from '@app/api/user';
+import { getUserPermissions, getUsers } from '@app/api/user';
 import { IoMailUnreadOutline } from 'react-icons/io5';
 import DatePicker from "react-datepicker";
+
 const animatedComponents = makeAnimated();
 const Swal = require('sweetalert2');
 
@@ -526,6 +527,9 @@ const styles = css`
   }
   :global(.file-input.sn-export::before) {
     content: 'Choose file contains MCU SN...' !important;
+  }
+  :global(.file-input.meter-export::before) {
+    content: 'Choose file contains Meter SN...' !important;
   }
   :global(.file-input::-webkit-file-upload-button) {
     visibility: hidden;
@@ -1703,104 +1707,232 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                             :null
                             }
 
-                            {!!this.state.exportDeviceByUploadSN ?
-                                <>
-                                <div
+                            {!!this.state.exportDeviceByUploadSN && (
+                              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
+                                  <div
                                     className="col-md-6 input-wrap has-feedback has-success"
-                                    style={{ display: 'flex', flexDirection: 'column', position: 'relative', paddingRight: '20px', marginBottom: '25px', marginTop: '25px', overflow: 'unset' }}
-                                >
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      position: 'relative',
+                                      paddingRight: '20px',
+                                      marginBottom: '25px',
+                                      marginTop: '25px',
+                                      overflow: 'unset'
+                                    }}
+                                  >
                                     <input
-                                        className="col-md-4 file-input sn-export"
-                                        type="file"
-                                        placeholder={'File upload'}
-                                        accept=".csv, .txt"
-                                        dataButtonText="Choose file contains MCU SN..."
-                                        onChange={(event) => {
-                                          this.setState({ file4Export: event.target.files[0] });
-                                        }}
+                                      className="file-input sn-export"
+                                      type="file"
+                                      placeholder={'File upload'}
+                                      accept=".csv, .txt"
+                                      dataButtonText="Choose file contains MCU SN..."
+                                      onChange={(event) => {
+                                        this.setState({ file4Export: event.target.files[0] });
+                                      }}
                                     />
                                     {this.state.validateFile4Export === false ?
-                                        <small className="help-block"
-                                             style={{
-                                               color: '#eb0000',
-                                               fontSize: '12px',
-                                               fontWeight: '400',
-                                               marginLeft: '15px',
-                                             }}
-                                        >
-                                          {!this.state.file4Export ? 'File is required' : ''}
-                                        </small>
-                                    : null}
-                                </div>
-                                <div className="form-group mt-5">
-                                    <div className="col-md-6 input-wrap has-feedback has-success" style={{ display: 'flex', flexDirection: 'row', marginLeft: '15px' }}>
-                                        <div style={{ marginLeft: '0px', margin: 'unset' }} className="button-btn w-80"
-                                            onClick={ async () => {
+                                      <small
+                                        className="help-block"
+                                        style={{
+                                          color: '#eb0000',
+                                          fontSize: '12px',
+                                          fontWeight: '400',
+                                        }}
+                                      >
+                                        {!this.state.file4Export ? 'File is required' : ''}
+                                      </small>
+                                      : null}
+                                  </div>
+                                  <div className="form-group mt-5">
+                                    <div
+                                      className="col-md-6 input-wrap has-feedback has-success"
+                                      style={{ display: 'flex', flexDirection: 'row' }}
+                                    >
+                                      <div
+                                        style={{ marginLeft: '0px', margin: 'unset' }}
+                                        className="button-btn w-80"
+                                        onClick={async () => {
 
-                                              if (!this.state.file4Export) {
-                                                this.setState({
-                                                  validateFile4Export: false,
-                                                })
-                                                return;
-                                              }
-                                              const result = await Swal.fire({
-                                                html: "<p style='text-align: center; font-size: 14px;'>Are you sure?</p>",
-                                                icon: 'question',
-                                                confirmButtonText: 'OK',
-                                                cancelButtonText: 'Cancel',
-                                                showCancelButton: true,
-                                              });
-                                              if (!result || !result.isConfirmed) return;
-                                              const formData = new FormData();
-                                              formData.append('file', this.state.file4Export, this.state.file4Export.name);
-                                              const url = 'api/export-by-upload-ca-request-logs' + '?timeZone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
-                                              const method = 'POST';
-                                              let rp = await fetch(url,
-                                                {
-                                                  method,
-                                                  body: formData,
-                                                  headers: new Headers({
-                                                    'Authorization': getCookie(tokenName),
-                                                  }),
-                                                },
-                                                )
-                                                .then((response) => {
-                                                  return response.blob();
-                                                });
-                                              if (rp) {
-                                                const tag =  moment(new Date()).format('YYYYMMDDHHmmss');
-                                                const fileName = 'mcus-' + tag + '.csv';
-                                                const url = window.URL.createObjectURL(new Blob([rp]));
-                                                const link = document.createElement('a');
-                                                link.href = url;
-                                                link.setAttribute('download', fileName);
-                                                document.body.appendChild(link);
-                                                link.click();
-                                                link.parentNode.removeChild(link);
-                                                this.setState({ openExportCsv: false, activateDate: undefined });
-                                              } else {
-                                                alert('Something went wrong. Please try again!');
-                                              }
-                                            }}
-                                        >
-                                            <span>{'EXPORT'}</span>
-                                        </div>
-                                        <div style={{ marginLeft: '5px' }} className="button-btn w-80"
-                                            onClick={() => {
-                                              this.setState({
-                                                uploadDeviceCsr: false,
-                                                exportDeviceByUploadSN: false,
-                                                file4Export: null,
-                                              })
-                                            }}
-                                        >
-                                            <span>{'CLOSE'}</span>
-                                        </div>
+                                          if (!this.state.file4Export) {
+                                            this.setState({
+                                              validateFile4Export: false,
+                                            })
+                                            return;
+                                          }
+                                          const result = await Swal.fire({
+                                            html: "<p style='text-align: center; font-size: 14px;'>Are you sure?</p>",
+                                            icon: 'question',
+                                            confirmButtonText: 'OK',
+                                            cancelButtonText: 'Cancel',
+                                            showCancelButton: true,
+                                          });
+                                          if (!result || !result.isConfirmed) return;
+                                          const formData = new FormData();
+                                          formData.append('file', this.state.file4Export, this.state.file4Export.name);
+                                          formData.append('type', 'MCU_SN');
+                                          const url = 'api/export-by-upload-ca-request-logs' + '?timeZone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                          const method = 'POST';
+                                          let rp = await fetch(url,
+                                            {
+                                              method,
+                                              body: formData,
+                                              headers: new Headers({
+                                                'Authorization': getCookie(tokenName),
+                                              }),
+                                            },
+                                          )
+                                            .then((response) => {
+                                              return response.blob();
+                                            });
+                                          if (rp) {
+                                            const tag = moment(new Date()).format('YYYYMMDDHHmmss');
+                                            const fileName = 'Exp-by-MSN-' + tag + '.csv';
+                                            const url = window.URL.createObjectURL(new Blob([rp]));
+                                            const link = document.createElement('a');
+                                            link.href = url;
+                                            link.setAttribute('download', fileName);
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            link.parentNode.removeChild(link);
+                                            this.setState({ openExportCsv: false, activateDate: undefined });
+                                          } else {
+                                            alert('Something went wrong. Please try again!');
+                                          }
+                                        }}
+                                      >
+                                        <span>{'EXPORT'}</span>
+                                      </div>
+                                      <div
+                                        style={{ marginLeft: '5px' }}
+                                        className="button-btn w-80"
+                                        onClick={() => {
+                                          this.setState({
+                                            uploadDeviceCsr: false,
+                                            exportDeviceByUploadSN: false,
+                                            file4Export: null,
+                                          })
+                                        }}
+                                      >
+                                        <span>{'CLOSE'}</span>
+                                      </div>
                                     </div>
+                                  </div>
                                 </div>
-                            </>
-                            :null
-                            }
+                                <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
+                                  <div
+                                    className="col-md-6 input-wrap has-feedback has-success"
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      position: 'relative',
+                                      paddingRight: '20px',
+                                      marginBottom: '25px',
+                                      marginTop: '25px',
+                                      overflow: 'unset'
+                                    }}
+                                  >
+                                    <input
+                                      className="file-input meter-export"
+                                      type="file"
+                                      placeholder={'File upload'}
+                                      accept=".csv, .txt"
+                                      dataButtonText="Choose file contains Meter SN..."
+                                      onChange={(event) => {
+                                        this.setState({ file4Export1: event.target.files[0] });
+                                      }}
+                                    />
+                                    {this.state.validateFile4Export1 === false ?
+                                      <small
+                                        className="help-block"
+                                        style={{
+                                          color: '#eb0000',
+                                          fontSize: '12px',
+                                          fontWeight: '400',
+                                        }}
+                                      >
+                                        {!this.state.file4Export1 ? 'File is required' : ''}
+                                      </small>
+                                      : null}
+                                  </div>
+                                  <div className="form-group mt-5">
+                                    <div
+                                      className="col-md-6 input-wrap has-feedback has-success"
+                                      style={{ display: 'flex', flexDirection: 'row' }}
+                                    >
+                                      <div
+                                        style={{ marginLeft: '0px', margin: 'unset' }}
+                                        className="button-btn w-80"
+                                        onClick={async () => {
+
+                                          if (!this.state.file4Export1) {
+                                            this.setState({
+                                              validateFile4Export1: false,
+                                            })
+                                            return;
+                                          }
+                                          const result = await Swal.fire({
+                                            html: "<p style='text-align: center; font-size: 14px;'>Are you sure?</p>",
+                                            icon: 'question',
+                                            confirmButtonText: 'OK',
+                                            cancelButtonText: 'Cancel',
+                                            showCancelButton: true,
+                                          });
+                                          if (!result || !result.isConfirmed) return;
+                                          const formData = new FormData();
+                                          formData.append('file', this.state.file4Export1, this.state.file4Export1.name);
+                                          formData.append('type', 'METER_SN');
+                                          const url = 'api/export-by-upload-ca-request-logs' + '?timeZone=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                          const method = 'POST';
+                                          let rp = await fetch(url,
+                                            {
+                                              method,
+                                              body: formData,
+                                              headers: new Headers({
+                                                'Authorization': getCookie(tokenName),
+                                              }),
+                                            },
+                                          )
+                                            .then((response) => {
+                                              return response.blob();
+                                            });
+                                          if (rp) {
+                                            const tag = moment(new Date()).format('YYYYMMDDHHmmss');
+                                            const fileName = 'Exp-by-Meter-SN-' + tag + '.csv';
+                                            const url = window.URL.createObjectURL(new Blob([rp]));
+                                            const link = document.createElement('a');
+                                            link.href = url;
+                                            link.setAttribute('download', fileName);
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            link.parentNode.removeChild(link);
+                                            this.setState({ openExportCsv: false, activateDate: undefined });
+                                          } else {
+                                            alert('Something went wrong. Please try again!');
+                                          }
+                                        }}
+                                      >
+                                        <span>{'EXPORT'}</span>
+                                      </div>
+                                      <div
+                                        style={{ marginLeft: '5px' }}
+                                        className="button-btn w-80"
+                                           onClick={() => {
+                                             this.setState({
+                                               uploadDeviceCsr: false,
+                                               exportDeviceByUploadSN: false,
+                                               file4Export1: null,
+                                             })
+                                           }}
+                                      >
+                                        <span>{'CLOSE'}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                             {(!this.state.uploadDeviceCsr && !this.state.exportDeviceByUploadSN ) ?
                             <>
@@ -3025,7 +3157,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                         className="button-btn ml-10 w-max px-10"
                                         onClick={() => this.setState({ exportDeviceByUploadSN: true })}
                                       >
-                                        <span>{'EXPORT BY MCU ID'}</span>
+                                        <span>{'EXPORT BY MCU or Meter SN'}</span>
                                       </div>
                                     </div>
                                     {this.state.deviceCsrButton == true ? (
