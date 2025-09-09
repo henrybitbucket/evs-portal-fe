@@ -1483,6 +1483,12 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                         });
                                                       if (rp?.response && !!rp?.response.length) {
                                                         this.setState({errorImportDevices: rp?.response});
+                                                      } else {
+                                                        Swal.fire({
+                                                          html: `<p style='text-align: center; font-size: 14px;'>${rp?.errorDescription || rp?.message}</p>`,
+                                                          icon: 'error',
+                                                          confirmButtonText: 'OK',
+                                                        });
                                                       }
                                                       this.setState({loading: false});
                                                     }}

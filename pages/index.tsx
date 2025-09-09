@@ -702,15 +702,15 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   </span>
                   <span className="db-top-item-desc">
                     {'DB Size: '}
-                    {`${moment().subtract(2, "month").format("MMMM")} 1: ${this.props.dbCheck?.last2MonthValue ? this.props.dbCheck?.last2MonthValue + "MB" : "N/A"} > `}
-                    {`${moment().subtract(1, "month").format("MMMM")} 1: ${this.props.dbCheck?.lastMonthValue ? this.props.dbCheck?.lastMonthValue + "MB" : "N/A"} > `}
-                    {`Now: ${this.props.dbCheck?.value ? this.props.dbCheck?.value + "MB" : "N/A"}`}
+                    {`${moment().subtract(2, "month").format("MMMM")} 1: ${this.props.dbCheck?.last2MonthValue ? this.props.dbCheck?.last2MonthValue + " MB" : "N/A"} > `}
+                    {`${moment().subtract(1, "month").format("MMMM")} 1: ${this.props.dbCheck?.lastMonthValue ? this.props.dbCheck?.lastMonthValue + " MB" : "N/A"} > `}
+                    {`Now: ${this.props.dbCheck?.value ? this.props.dbCheck?.value + " MB" : "N/A"}`}
                   </span>
                   <span className="db-top-item-desc">
                     {'Disk space (Free): '}
-                    {`${moment().subtract(2, "month").format("MMMM")} 1: ${this.props.appServerCheck?.last2MonthValue ? this.props.appServerCheck?.last2MonthValue + "GB" : "N/A"} > `}
-                    {`${moment().subtract(1, "month").format("MMMM")} 1: ${this.props.appServerCheck?.lastMonthValue ? this.props.appServerCheck?.lastMonthValue + "GB" : "N/A"} > `}
-                    {`Now: ${this.props.appServerCheck?.value ? this.props.appServerCheck?.value + "GB" : "N/A"}`}
+                    {`${moment().subtract(2, "month").format("MMMM")} 1: ${this.props.appServerCheck?.last2MonthValue ? this.props.appServerCheck?.last2MonthValue + " GB" : "N/A"} > `}
+                    {`${moment().subtract(1, "month").format("MMMM")} 1: ${this.props.appServerCheck?.lastMonthValue ? this.props.appServerCheck?.lastMonthValue + " GB" : "N/A"} > `}
+                    {`Now: ${this.props.appServerCheck?.value ? this.props.appServerCheck?.value + " GB" : "N/A"}`}
                   </span>
                   <span className="db-top-item-desc">
                     {'IP Address: '}{this.props.dbCheck?.ipAddress || 'N/A'}
@@ -725,25 +725,35 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     {'LastDown On: '}{this.props.dbCheck?.lastDownTime ? moment(this.props.dbCheck?.lastDownTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
                   </span>
                 </div>
-                <div className="db-top-item db-top-item-3" style={{flex: 'unset', minWidth: '360px'}}>
+                <div className="db-top-item db-top-item-2">
                   <span className="db-top-item-title">MQTT Broker Check</span>
-                  <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                    <span
-                      className="db-top-item-content"
-                      style={{ color: (!this.props.mqttStatus?.value || this.props.mqttStatus?.value === 'DOWN') ? 'red' : '' }}
-                    >
-                      {this.props.mqttStatus?.value || "DOWN"}
-                    </span>
-                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                      <div className="db-top-item-desc" style={{fontSize: '12px'}}>
-                        {'Last UP on: '}{this.props.mqttStatus?.lastUpTime ? moment(this.props.mqttStatus?.lastUpTime).format('YYYY-MM-DD HH:mm:ss') : ""}
-                      </div>
-                      <div className="db-top-item-desc" style={{fontSize: '12px'}}>
-                        {'Last DOWN on: '}{this.props.mqttStatus?.lastDownTime ? moment(this.props.mqttStatus?.lastDownTime).format('YYYY-MM-DD HH:mm:ss') : ""}
-                      </div>
-                    </div>
-                  </div>
-                  <span className="db-top-item-desc">{'MQTT address: '}{this.props.mqttAddress || ""}</span>
+                  <span
+                    className="db-top-item-content"
+                    style={{ color: (!this.props.mqttStatus?.value || this.props.mqttStatus?.value === 'DOWN') ? 'red' : '' }}
+                  >
+                    {this.props.mqttStatus?.value ? "UP" : "DOWN"}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'Disk space (Free): '}
+                    {`${moment().subtract(2, "month").format("MMMM")} 1: ${this.props.mqttStatus?.last2MonthValue ? this.props.mqttStatus?.last2MonthValue + " GB" : "N/A"} > `}
+                    {`${moment().subtract(1, "month").format("MMMM")} 1: ${this.props.mqttStatus?.lastMonthValue ? this.props.mqttStatus?.lastMonthValue + " GB" : "N/A"} > `}
+                    {`Now: ${this.props.mqttStatus?.value ? this.props.mqttStatus?.value + " GB" : "N/A"}`}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'Disk space (Jan 1): '}{this.props.mqttStatus?.prevValue ? this.props.mqttStatus?.prevValue + ' GB' : 'N/A'}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'MQTT address: '}{this.props.mqttAddress || 'N/A'}
+                  </span>
+                  <span className="db-top-item-desc" style={{ color: this.props.mqttStatus?.valueCpu > 80 ? 'red' : '' }}>
+                    {'CPU: '}{(this.props.mqttStatus?.valueCpu || 0) + '%'}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'LastUp On: '}{this.props.mqttStatus?.lastUpTime ? moment(this.props.mqttStatus?.lastUpTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
+                  </span>
+                  <span className="db-top-item-desc">
+                    {'LastDown On: '}{this.props.mqttStatus?.lastDownTime ? moment(this.props.mqttStatus?.lastDownTime).format('YYYY-MM-DD HH:mm:ss') : "N/A"}
+                  </span>
                 </div>
                 {this.state.isMoreDetails && (
                   <div className={`device-stats-wrapper ${this.state.isMoreDetails ? 'slide-in' : 'slide-out'}`}>
@@ -1581,10 +1591,11 @@ Homepage = require('react-redux').connect((state, ownProps) => {
     const serverCertificate = state.header?.systemInformation?.find(f => f.key === 'SERVER_CERTIFICATE');
     const uptime = Math.round((new Date().getTime() - new Date(systemStart?.value).getTime()) / (24 * 60 * 60 * 1000)) + 1
     const appServerCheck = state.header?.systemInformation?.find(f => f.key === 'APP_SERVER_STATUS');
+    const mqttStatus = state.header?.systemInformation?.find(f => f.key === 'MQTT_STATUS');
 
     return {
       alarms: state.header?.alarms || 0,
-      mqttStatus: state.header?.mqttStatus,
+      mqttStatus,
       mqttAddress: state.header?.mqttAddress,
       systemStart: systemStart,
       dbCheck: dbCheck,
