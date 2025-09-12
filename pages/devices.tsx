@@ -5181,6 +5181,39 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                               </tr>
                               </tbody>
                             </table>
+                            <table>
+                              <thead>
+                              <tr>
+                                <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '100%', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
+                                  <div style={{display: 'flex', justifyContent: 'row'}}>
+                                    <div style={{flex: 1}}>
+                                      <span>
+                                        Type Info
+                                      </span>
+                                    </div>
+                                  </div>
+                                </th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr>
+                                <td style={{ color: '#000', fontWeight: '300', fontSize: '14px', padding: '10px', border: '1px solid #e6e6e6' }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      width: '100%',
+                                      justifyContent: 'space-between',
+                                      marginBottom: '5px',
+                                    }}
+                                    className="box-item"
+                                  >
+                                    Type: {this.state.detailsData.enrollType}
+                                  </div>
+                                </td>
+                              </tr>
+                              </tbody>
+                            </table>
                             <div
                               style={{
                                 display: 'flex',
