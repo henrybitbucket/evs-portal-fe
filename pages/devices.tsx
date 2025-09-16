@@ -5087,8 +5087,8 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                 <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '180px', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
                                   {'MCU UUID'}
                                 </th>
-                                <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '160px', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
-                                  {'Enrolment date'}
+                                <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '180px', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
+                                  {'MCU Properties'}
                                 </th>
                                 <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '100px', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
                                   {'OID Reset Time'}
@@ -5116,7 +5116,12 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                   {this.state.detailsData.uid}
                                 </th>
                                 <th style={{ color: '#000', fontWeight: '300', fontSize: '14px', padding: '10px', border: '1px solid #e6e6e6' }}>
-                                  {!!this.state.detailsData.enrollmentDatetime ? moment(new Date(this.state.detailsData.enrollmentDatetime)).format('DD/MM/YYYY HH:mm:ss') : ''}
+                                  <div>
+                                    Type: {this.state.detailsData.enrollType}
+                                  </div>
+                                  <div>
+                                    {!!this.state.detailsData.enrollmentDatetime ? `Enroll date: ${moment(new Date(this.state.detailsData.enrollmentDatetime)).format('DD/MM/YYYY HH:mm:ss')}` : ''}
+                                  </div>
                                 </th>
                                 <th style={{ color: '#000', fontWeight: '300', fontSize: '14px', padding: '10px', border: '1px solid #e6e6e6' }}>
                                   {this.state.detailsData.midResetTime || 0}
@@ -5178,39 +5183,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                     }
                                   </div>
                                 </th>
-                              </tr>
-                              </tbody>
-                            </table>
-                            <table>
-                              <thead>
-                              <tr>
-                                <th style={{ backgroundColor: '#f7f7f7', color: '#000', fontWeight: '400', fontSize: '14px', width: '100%', maxWidth: '180px', padding: '10px', border: '1px solid #e6e6e6' }}>
-                                  <div style={{display: 'flex', justifyContent: 'row'}}>
-                                    <div style={{flex: 1}}>
-                                      <span>
-                                        Type Info
-                                      </span>
-                                    </div>
-                                  </div>
-                                </th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              <tr>
-                                <td style={{ color: '#000', fontWeight: '300', fontSize: '14px', padding: '10px', border: '1px solid #e6e6e6' }}>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      width: '100%',
-                                      justifyContent: 'space-between',
-                                      marginBottom: '5px',
-                                    }}
-                                    className="box-item"
-                                  >
-                                    Type: {this.state.detailsData.enrollType}
-                                  </div>
-                                </td>
                               </tr>
                               </tbody>
                             </table>
