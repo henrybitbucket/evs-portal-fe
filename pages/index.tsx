@@ -677,7 +677,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     {'Disk space (Free): '}{this.props.appServerCheck?.value ? this.props.appServerCheck?.value + ' GB' : 'N/A'}
                   </span>
                   <span className="db-top-item-desc">
-                    {'Disk space (Jan 1): '}{this.props.appServerCheck?.prevValue ? this.props.appServerCheck?.prevValue + ' GB' : 'N/A'}
+                    {'Disk space (Jan 1): '}{this.props.appServerCheck?.jan1Value ? this.props.appServerCheck?.jan1Value + ' GB' : 'N/A'}
                   </span>
                   <span className="db-top-item-desc">
                     {'IP Address: '}{this.props.appServerCheck?.ipAddress || 'N/A'}
@@ -740,7 +740,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                     {`Now: ${this.props.mqttStatus?.value ? this.props.mqttStatus?.value + " GB" : "N/A"}`}
                   </span>
                   <span className="db-top-item-desc">
-                    {'Disk space (Jan 1): '}{this.props.mqttStatus?.prevValue ? this.props.mqttStatus?.prevValue + ' GB' : 'N/A'}
+                    {'Disk space (Jan 1): '}{this.props.mqttStatus?.jan1Value ? this.props.mqttStatus?.jan1Value + ' GB' : 'N/A'}
                   </span>
                   <span className="db-top-item-desc">
                     {'MQTT address: '}{this.props.mqttAddress || 'N/A'}
