@@ -97,7 +97,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     document.removeEventListener("mouseup", this.handleMouseUp);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  _componentDidUpdate(prevProps, prevState) {
     if (this.state.isResizing && !prevState.isResizing) {
       document.addEventListener("mousemove", this.handleMouseMove);
       document.addEventListener("mouseup", this.handleMouseUp);
@@ -304,8 +304,8 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
         {this.state.permissions != null ?
           <div
             className="site-menubar menu"
-            onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
-            onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
+            //onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
+            //onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
           >
             <div
               ref={this.container}

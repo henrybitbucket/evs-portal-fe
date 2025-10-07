@@ -211,18 +211,31 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
             </DropdownMenu>
           </UncontrolledDropdown>
           <div className="navbar-brand navbar-brand-center" data-toggle="gridmenu" style={{width: '100%', padding: "unset"}}>
-            <div style={{minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%'}} className='group-brand-logo'>
-              <img className="navbar-brand-logo" src="/static/images/logo2.png" title="Remark" style={{}} />
+            <div style={{minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%'}} className='group-brand-logo1'>
+                  <img className="navbar-brand-logo1" src="/static/images/logo2.png" title="Remark" style={{display: 'none'}}
+                       onClick={() => {
+                         this.props.toggleSiteMenu(!this.props.isToggle);
+                       }}
+                  />
+                <i className="fa fa-bars" aria-hidden="true"
+                   style={{fontSize: '17px', color: 'white', width: '17px'}}
+                   onClick={() => {
+                       this.props.toggleSiteMenu(!this.props.isToggle);
+                   }}
+                />
+
               <div
                 style={{
                   flex: '1',
                   display: 'flex',
+                  maxWidth: 'calc(100% - 80px)',
                 }}
               >
                 <i
                   style={{
                     cursor: 'pointer',
                     fontSize: '30px',
+                    display: 'none',
                     color: (this.props.isOpenSideMenu || this.props.isToggle) ? 'white' : '',
                   }}
                   className={`${(this.props.isOpenSideMenu || this.props.isToggle) ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}`}
