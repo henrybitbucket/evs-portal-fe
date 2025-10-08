@@ -28,8 +28,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     super(props);
     let path = window.location.href.substring(window.location.origin.length);
 
-    const store = isServer() ? configureStore() : getStoreBetweenPageTransitions();
-    const userInfo = store.getState()?.userInfo;
+    const userInfo = this.props.userInfo;
     const isOnlyP2User = false;// userInfo.authorities && userInfo.authorities.length === 1 && ((userInfo.authorities[0].authority === 'R_P2') || (userInfo.authorities[0].authority === (this.state.appCode + '_' + 'R_P2')));
     const isDms = getCookie('is_dms');
     const appCode = getCookie('app_code');
@@ -504,5 +503,15 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     );
   }
 }
+
+MenuBar = require('react-redux').connect((state, ownProps) => {
+      return {
+        alarms: state.header?.alarms || 0,
+        userInfo: state.userInfo || {},
+      }
+    },
+    (dispatch) => ({
+      dispatch
+    }))(MenuBar);
 
 export default withNamespaces('common')(MenuBar);

@@ -629,15 +629,13 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
     this.setState({
       permissions: rp?.response?.results[0]?.permissions || [],
     });
-    console.log("permissions", this.state.permissions);
+
     if (this.state.permissions != null) {
       this.state.permissions.map((p, id) => {
         if (p.name === 'PAGE_DASHBOARD_PERM') {
           this.setState({ dashboardPer: true });
         }
       })
-    } else {
-      console.log("permissions null");
     }
   }
 

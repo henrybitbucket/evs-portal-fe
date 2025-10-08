@@ -51,6 +51,10 @@ interface IMainLayoutProps extends IBasicComponentProps {
 // interface IMainLayoutState {}
 
 class MainLayout extends React.PureComponent<IMainLayoutProps, any> {
+
+  constructor(props) {
+    super(props);
+  }
   toggleSiteMenu = () => {
     if (!isServer() && shouldRenderMobileVersion()) {
       this.props.toggleSiteMenu(false);

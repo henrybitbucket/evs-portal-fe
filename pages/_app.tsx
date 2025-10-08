@@ -19,6 +19,7 @@ import { hasAccessOnPage, redirect } from '@app/utils/app-init';
 import { getMenuItems, getProfile } from '@app/api/user';
 import { getSettings } from '@app/api/log';
 import NavbarHeader from '@app/components/NavbarHeader';
+import MenuBar from '@app/components/MenuBar';
 
 import {
   isServer,
@@ -37,7 +38,7 @@ const getOrInitReduxStore = (props) => {
 
 const hookIntoRouterCallbacks = (store) => {
   Router.events.on('routeChangeStart', () => {
-    store.dispatch(toggleSiteMenu(false));
+    // store.dispatch(toggleSiteMenu(false));
     NProgress.start();
   });
   Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -251,6 +252,10 @@ class MyApp extends App<any, IMyAppState> {
   }
 
   renderDynamicMenu = (pageProps) => {
+    if (typeof window === 'object') {
+      return <MenuBar asPath={pageProps.asPath || ''}/>
+    }
+
     const MenuBarDynamic = dynamic(() =>
       import('@app/components/MenuBar').then(mod => mod.default),
     );

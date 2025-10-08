@@ -1054,7 +1054,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
     this.setState({
       permissions: rp?.response.results[0].permissions || [],
     });
-    console.log("permissions",this.state.permissions);
     if(this.state.permissions != null) {
       this.state.permissions.map((p, id) => {
         if (p.name === 'PAGE_DEVICES_UPLOAD_DEVICE_CSR_BUTTON_PERM') {
@@ -1079,8 +1078,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
           this.setState({meterRelayOffButton: true});
         }
       })
-    } else {
-      console.log("permissions null");
     }
   }
 

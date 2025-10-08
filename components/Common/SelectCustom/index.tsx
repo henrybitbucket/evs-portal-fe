@@ -66,7 +66,7 @@ const SelectCustom: React.SFC<ISelectCustomProps> = ({
   const handleBlur = () => {
     props && props.onBlur && props.onBlur(field.name, true);
   };
-  console.info(options, opt);
+
   return (
 
     <div className="form-group" style={{...props.groupstyle, ...props.groupStyle}}>

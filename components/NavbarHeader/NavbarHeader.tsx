@@ -326,6 +326,7 @@ NavbarHeader = require('react-redux').connect((state, ownProps) => {
     return {
         alarms: state.header?.alarms || 0,
         userInfo: state.userInfo || {},
+        isToggle: !!state['site-menu']?.isToggleMenu,
     }
 },
 (dispatch) => ({

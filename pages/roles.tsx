@@ -415,8 +415,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
           this.setState({ superAdmin: true });
         }
       })
-    } else {
-      console.log("permissions null");
     }
   }
 
