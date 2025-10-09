@@ -248,18 +248,15 @@ const styles = css`
 
 class Error extends React.Component<{statusCode: string}, any> {
     static getInitialProps = async (args) => {
-        let { query: {}, asPath, req, res, err, initialState: {} } = args;
-        const statusCode = res ? res.statusCode : err ? err.statusCode : null;
-        return { statusCode, useTemplate: true, asPath};
+        let { query: {}, asPath, req, res, initialState: {} } = args;
+        return { statusCode: 404, useTemplate: true, asPath};
     }
 
   render() {
     return (
       <p style={{padding: '15px',}}>
           <style jsx>{styles}</style>
-        {this.props.statusCode != '404'
-          ? `An error ${this.props.statusCode} occurred on server`
-          : `${this.props.asPath} (NA)`}
+        {`${this.props.asPath} (NA)`}
       </p>
     );
   }

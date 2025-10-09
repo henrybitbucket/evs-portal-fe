@@ -6,6 +6,8 @@ const getGenericReqParams = req => ({
   language: req.language,
 });
 
+//x.split(/\r*\n/g).filter(l => l.trim().startsWith('route.get('))
+//.map(l => l.trim().replace(/^.*[^(]+\(['\"]([^'\",]+)['\"] *,.*$/g, '$1'))
 const prettyUrlRouter = ({ app }) => {
   const route = Router();
 

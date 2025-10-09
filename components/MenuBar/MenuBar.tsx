@@ -22,6 +22,8 @@ const styles = css`
 
 const MENU_BAR_WIDTH = "menuBarWidth";
 
+const trustPaths = ['/', '/auth/signin', '/tc-commands', '/devices', '/user-list', '/firm-ware', '/exports', '/meter-commissioning-report', '/upgrade-firmware', '/device-group', '/data-settings', '/meter-clients', '/vendors', '/dms-locks', '/dms-lock-event-logs', '/p2-workers', '/batch-process-logs', '/deployments', '/task-schedule', '/report', '/report-repository', '/building', '/units', '/floor-level', '/building-unit', '/audit', '/roles', '/group', '/my-group', '/no-authorization', '/upload', '/setting', '/capp/application/:id', '/address-logs', '/p2-step', '/p1-detail-report', '/p1-summary-report', '/p2-provisioning-report', '/p2-ack-report', '/device-logs', '/relay-status-command-logs', '/p1-online-check', '/project-tag', '/company', '/devices-meter', '/dms-site-management', '/dms-work-orders', '/dms-project-management', '/dms-application-management', '/view-management', '/dms-vendor-management', '/e-code', '/dms-locks-access-permission'];
+
 class MenuBar extends React.Component<INavbarHeaderProps, any> {
 
   constructor(props) {
@@ -237,6 +239,23 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     menu = this.state.appCode === 'MMS' ? menuMms :menuDms;
     menu.sort((o1, o2) => Number(o1.order) - Number(o2.order));
     menu.forEach(m => (m.children || []).sort((o1, o2) => Number(o1.order) - Number(o2.order)));
+    if (typeof window == 'object') {
+      window._nextRoutes = require('@app/utils/next-routes');
+    }
+    menu.forEach(m => {
+      if (!!m.path && !trustPaths.includes(m.path) && typeof window === 'object' && window._nextRoutes) {
+        try {
+          window._nextRoutes.add(m.name, m.path, '_error_404');
+        } catch(e) {}
+      }
+      (m.children || []).forEach(mc => {
+        if (!!mc.path && !trustPaths.includes(mc.path) && typeof window === 'object' && window._nextRoutes) {
+          try {
+            window._nextRoutes.add(mc.name, mc.path, '_error_404');
+          } catch(e) {}
+        }
+      })
+    })
     this.setState({
       menuItems: menu,
     })
@@ -427,7 +446,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                                   this.showMenu(subIt) ? (
                                     <I18nLink
                                       activeClassName="active"
-                                      href={subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
+                                      //href="javascript: void(0);"
                                       index={idx + '_' + subIdx} key={idx + '_' + subIdx}>
                                       <li className="site-menu-item">
                                         <a href="javascript:void(0)"
@@ -453,7 +472,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                         : (this.showMenu(it) ? (
                           <I18nLink
                             activeClassName={!!this.state.dashboardCollapse ? 'active' : 'none'}
-                            href={it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list')}
+                            //href="javascript: void(0);"
                             index={idx + '_'} key={idx + '_'}>
                             <li className="site-menu-item">
                               <a
