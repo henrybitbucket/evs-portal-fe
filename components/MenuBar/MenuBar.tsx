@@ -43,12 +43,14 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       userInfo,
       isDms,
       appCode,
-      isResizing: false,
+      isResizing: false, //xử lý resize menu
       initialX: 0,
-      menuBarMinWidth: 80,
+      menuBarMinWidth: 280,
       menuBarMaxWidth: window.innerWidth / 2,
-      width: Number(localStorage.getItem(MENU_BAR_WIDTH)) || 80,
+      startMenuBarWidth: 80,
+      menuWidth: 280,
     }
+
 
     this.container = createRef();
     this.minWidth = 80;
@@ -93,19 +95,12 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
+    // window.removeEventListener("resize", this.handleResize);
     document.removeEventListener("mousemove", this.handleMouseMove);
     document.removeEventListener("mouseup", this.handleMouseUp);
   }
 
-  _componentDidUpdate(prevProps, prevState) {
-    if (this.state.isResizing && !prevState.isResizing) {
-      document.addEventListener("mousemove", this.handleMouseMove);
-      document.addEventListener("mouseup", this.handleMouseUp);
-    } else if (!this.state.isResizing && prevState.isResizing) {
-      document.removeEventListener("mousemove", this.handleMouseMove);
-      document.removeEventListener("mouseup", this.handleMouseUp);
-    }
+  componentDidUpdate() {
     if (this.props.isOpenSideMenu || this.props.isToggle) {
       const localWidth = localStorage.getItem(MENU_BAR_WIDTH);
       document.getElementsByClassName("site-menubar-body")?.length && document.getElementsByClassName("site-menubar-body")[0].setAttribute(
@@ -147,30 +142,38 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     }
   }
 
-  handleResize = () => {
-    if (this.container.current) {
-      const monitorWidth = screen.width;
-      const screenWidth = window.innerWidth;
-      const width = Number(window.sessionStorage.getItem(MENU_BAR_WIDTH));
-      const currentWidth = width && width > 0 ? width * screenWidth : 800;
-      if (screenWidth / monitorWidth < 0.3) {
-        this.setState({
-          width: screenWidth > this.minWidth ? screenWidth : this.minWidth,
-        })
-      } else {
-        this.setState({
-          width: currentWidth > this.minWidth ? currentWidth : this.minWidth,
-        })
-      }
-      this.maxWidth = screenWidth * 0.95;
-    }
-  };
+  // handleResize = () => {
+  //   if (this.container.current) {
+  //     const monitorWidth = screen.width;
+  //     const screenWidth = window.innerWidth;
+  //     const width = Number(window.sessionStorage.getItem(MENU_BAR_WIDTH));
+  //     const currentWidth = width && width > 0 ? width * screenWidth : 800;
+  //     if (screenWidth / monitorWidth < 0.3) {
+  //       this.setState({
+  //         width: screenWidth > this.minWidth ? screenWidth : this.minWidth,
+  //       })
+  //     } else {
+  //       this.setState({
+  //         width: currentWidth > this.minWidth ? currentWidth : this.minWidth,
+  //       })
+  //     }
+  //     this.maxWidth = screenWidth * 0.95;
+  //   }
+  // };
 
   handleMouseDown = (e: any) => {
     this.setState({
       isResizing: true,
       initialX: e.clientX,
+      startMenuBarWidth: this.state.menuWidth,
     })
+
+    if (this.props.isOpenSideMenu || this.props.isToggle){
+      document.addEventListener("mousemove", this.handleMouseMove);
+    }
+    document.addEventListener("mouseup", this.handleMouseUp);
+    document.body.style.cursor = "ew-resize";
+
     document.getElementsByClassName("main-layout")[0].setAttribute(
       "style",
       `user-select: none;`
@@ -179,6 +182,11 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
 
   handleMouseUp = () => {
     this.setState({ isResizing: false });
+
+    document.removeEventListener("mousemove", this.handleMouseMove);
+    document.removeEventListener("mouseup", this.handleMouseUp);
+    document.body.style.cursor = "default";
+
     document.getElementsByClassName("main-layout")[0].setAttribute(
       "style",
       `user-select: auto;`
@@ -186,29 +194,45 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   };
 
   handleMouseMove = (e: MouseEvent) => {
-    if (this.state.isResizing && e.clientX > this.state.menuBarMinWidth && e.clientX < this.state.menuBarMaxWidth) {
+      if(!this.state.isResizing) return;
+
+      //set kich thuoc menubar
+      const delta = e.clientX - this.state.initialX;
+      const newWidth = this.state.startMenuBarWidth + delta;
+
+      //limit width
+      if(newWidth >= this.state.menuBarMinWidth && newWidth < this.state.menuBarMaxWidth){
+        this.setState({
+          menuWidth: newWidth
+        })
+
+        localStorage.setItem(MENU_BAR_WIDTH, newWidth);
+      }
+
+      if(newWidth < this.state.menuBarMinWidth){
+        localStorage.setItem(MENU_BAR_WIDTH, this.state.menuBarMinWidth);
+      }
+
       document.getElementsByClassName("site-menubar-body")[0].setAttribute(
-        "style",
-        `width: ${e.clientX}px !important; min-width: unset !important;`
+          "style",
+          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
-        "style",
-        `width: ${e.clientX}px !important; min-width: unset !important;`
+          "style",
+          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
       );
       document.getElementsByClassName("site-menubar")[0].setAttribute(
-        "style",
-        `width: ${e.clientX}px !important; min-width: unset !important;`
+          "style",
+          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("navbar-header")[0].setAttribute(
-        "style",
-        `width: ${e.clientX}px !important; min-width: unset !important;`
+          "style",
+          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
       )
       document.getElementsByClassName("page")[0].setAttribute(
-        "style",
-        `margin-left: ${e.clientX}px !important; min-width: unset !important;`
+          "style",
+          `margin-left: ${this.state.menuWidth}px !important; min-width: unset !important;`
       )
-      localStorage.setItem(MENU_BAR_WIDTH, e.clientX.toString());
-    }
   };
 
   logOut = async () => {
@@ -220,7 +244,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   componentDidMount() {
     this.searchGroup();
     this.getMenuItems();
-    window.addEventListener("resize", this.handleResize);
+    // window.addEventListener("resize", this.handleResize);
   }
 
   async getMenuItems() {
@@ -322,12 +346,16 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
         {this.state.permissions != null ?
           <div
             className="site-menubar menu"
-            //onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
-            //onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
+            // onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
+            // onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
           >
             <div
               ref={this.container}
               className={`relative h-full ${isResizing ? "select-none" : ""}`}
+              style={{
+                width: '100%',
+                transition: this.state.isResizing ? "none" : "width 0.1s",
+              }}
             >
                <div
                 onMouseDown={this.handleMouseDown}
