@@ -7,7 +7,8 @@ import {
   getDeviceGroups,
   getPiClients,
   getRelatedLogs,
-  markViewAll
+  markViewAll,
+  countAlarms
 } from '@app/api/log';
 import moment from 'moment';
 import 'moment-timezone';
@@ -16,6 +17,7 @@ import { IoMailUnreadOutline } from 'react-icons/io5';
 import makeAnimated from 'react-select/animated';
 import { Pagination, ProgressLoading, SelectCustom } from '@app/components/Common';
 import { getUserPermissions } from "@app/api/user";
+import { toastrs } from '@app/utils/toastr';
 
 const animatedComponents = makeAnimated();
 const Swal = require('sweetalert2');
@@ -824,36 +826,120 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   </div>
                 )}
               </div>
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'end',
+              justifyContent: 'end',
+            }}>
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'end',
-                  justifyContent: 'end',
-                  width: '130px'
-                }}
-              >
-                <div
                   style={{
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: "center"
+                    alignItems: 'end',
+                    justifyContent: 'end',
+                    padding: '15px'
                   }}
+              >
+                <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: "center"
+                    }}
                 >
                   <i
+                      ref={ref => {
+                        this.refreshDashBoardRef = ref;
+                      }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '30px',
+                        marginRight: '15px',
+                        transition: 'color 0.3s ease, transform 0.3s ease',
+                        transform: 'scale(1)',
+                      }}
+                      className={'fa fa-refresh'}
+                      onClick={async () => {
+						if (!!this.refreshDashBoardInt) {
+							return;
+						}
+                        if (this.refreshDashBoardRef && !this.refreshDashBoardInt) {
+                          this.refreshDashBoardInt = setInterval(async () => {
+							if (this.refreshDashBoardRef) {
+								if (this.refreshDashBoardRef.style.transition) {
+									this.refreshDashBoardRef.style.transition = null;
+									this.refreshDashBoardRef.style.rotate = null;
+									delete this.refreshDashBoardRef.style.transition;
+									delete this.refreshDashBoardRef.style.rotate;
+								}
+								
+								await new Promise(rj => {
+									setTimeout(() => {
+										rj();
+									}, 100)
+								}, rs => {});	
+								
+								this.refreshDashBoardRef.style.transition = 'rotate 1s ease-in-out';
+								this.refreshDashBoardRef.style.rotate = '360deg';
+							}
+                          }, 1050);
+                        } else if (!!this.refreshDashBoardInt) {
+							this.refreshDashBoardRef.style.transition = null;
+							this.refreshDashBoardRef.style.rotate = null;
+							delete this.refreshDashBoardRef.style.transition;
+							delete this.refreshDashBoardRef.style.rotate;
+							clearInterval(this.refreshDashBoardInt);
+							delete this.refreshDashBoardInt;
+                        }
+						
+						try {
+							let rp = await countAlarms(null, true);
+							this.props.dispatch({
+								type: 'HEADER_STATUS',
+								headerStatus: {
+									alarms: rp.response?.countAlarms || 0,
+									mqttAddress: rp.response?.mqttAddress,
+									mqttStatus: rp.response?.mqttStatus,
+									countDevices: rp.response?.countDevices,
+									systemInformation: rp.response?.systemInformation,
+									appServerCheck: rp.response?.appServerCheck,
+							}});
+							toastrs.show('success', "Successfully!");
+						} catch(e) {}
+						finally {
+							this.refreshDashBoardRef.style.transition = null;
+							this.refreshDashBoardRef.style.rotate = null;
+							delete this.refreshDashBoardRef.style.transition;
+							delete this.refreshDashBoardRef.style.rotate;
+							clearInterval(this.refreshDashBoardInt);
+							delete this.refreshDashBoardInt;
+						}
+
+                      }}
+                  />
+                </div>
+                <div
                     style={{
-                      cursor: 'pointer',
-                      fontSize: '30px',
-                      marginRight: '5px',
-                      color: this.state.isMoreDetails ? 'green' : '',
-                      transition: 'color 0.3s ease, transform 0.3s ease',
-                      transform: this.state.isMoreDetails ? 'scale(1.1)' : 'scale(1)'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: "center"
                     }}
-                    className={`${this.state.isMoreDetails ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}`}
-                    onClick={() => {
-                      this.setState({
-                        isMoreDetails: !this.state.isMoreDetails
-                      })
-                    }}
+                >
+                  <i
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '30px',
+                        marginRight: '5px',
+                        color: this.state.isMoreDetails ? 'green' : '',
+                        transition: 'color 0.3s ease, transform 0.3s ease',
+                        transform: this.state.isMoreDetails ? 'scale(1.1)' : 'scale(1)'
+                      }}
+                      className={`${this.state.isMoreDetails ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}`}
+                      onClick={() => {
+                        this.setState({
+                          isMoreDetails: !this.state.isMoreDetails
+                        })
+                      }}
                   />
                   <div>{'More details'}</div>
                 </div>

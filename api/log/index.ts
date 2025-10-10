@@ -819,8 +819,8 @@ const getP1Files = async (params, req): Promise<any> => {
   return res;
 };
 
-const countAlarms = async (req): Promise<any> => {
-  const res = await $get(req, 'cal-dashboard');
+const countAlarms = async (req, refresh): Promise<any> => {
+  const res = await $get(req, 'cal-dashboard?refresh=' + (refresh === true ? 'true' : ''));
   return res;
 };
 
