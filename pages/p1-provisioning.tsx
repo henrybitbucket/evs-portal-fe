@@ -481,7 +481,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
 
   state = {
     ...this.props,
-    uploadFileList: [{uid: '', files: null}],
+    uploadFileList: [{ uid: '', files: null }],
   };
 
   constructor(props) {
@@ -494,7 +494,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
         q,
         page,
       },
-      asPath, req, initialState: {},
+      asPath, req, initialState: { },
     } = args;
     const pageNumber = Number(page) || 1;
     const params = {
@@ -532,7 +532,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
     if (!this.state.uploadFileList?.length) {
       return;
     }
-    await this.setState({loading: true});
+    await this.setState({ loading: true });
     this.state.uploadFileList[0].errorFileName = null;
     this.state.uploadFileList[0].existFileName = null;
     Array.from(this.state.uploadFileList[0].files).forEach(it => {
@@ -566,7 +566,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
       }
     }
     console.info('done validateFileName', this.state.uploadFileList[0]);
-    this.setState({loading: false});
+    this.setState({ loading: false });
   }
 
   componentDidMount() {
@@ -679,7 +679,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                 height: '40px',
                               }}
                             >
-                              <div style={{marginRight: '10px', width: '72px'}}>Select file: </div>
+                              <div style={{ marginRight: '10px', width: '72px' }}>Select file: </div>
                               <div
                                 style={{ position: 'relative', paddingRight: '20px' }}
                               >
@@ -696,7 +696,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                   type="file"
                                   multiple={true}
                                   placeholder={'File upload'}
-                                  style={{width: 'max-content', display: 'none'}}
+                                  style={{ width: 'max-content', display: 'none' }}
                                   onChange={async (event) => {
                                     const tmp = this.state.uploadFileList;
                                     tmp[index] = {
@@ -723,15 +723,15 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                 }}
                               >
                                 {(item?.files?.length ? Array.from(item?.files) : []).map((it, idx) => (
-                                  <div style={{marginBottom: '10px', display: 'flex', flexDirection: 'column'}} key={idx}>
-                                    <div style={{display: 'flex', flexDirection: 'row'}}>
-                                      <span style={{flex: 1}}>{it.name || ""}</span>
-                                      <i className='fa fa-remove' style={{color: 'red', cursor: 'pointer'}}
+                                  <div style={{ marginBottom: '10px', display: 'flex', flexDirection: 'column' }} key={idx}>
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                      <span style={{ flex: 1 }}>{it.name || ""}</span>
+                                      <i className='fa fa-remove' style={{ color: 'red', cursor: 'pointer' }}
                                         onClick={() => {
                                           window.itemFile = item.files;
                                           console.info('item.files', item.files)
                                           item.files.splice(idx, 1);
-                                          this.setState({uploadFileList: [].concat(this.state.uploadFileList)})
+                                          this.setState({ uploadFileList: [].concat(this.state.uploadFileList) })
                                         }}
                                       />
                                     </div>
@@ -798,7 +798,8 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                           {/*</div>*/}
                         </div>
                       </div>
-                    )})}
+                    )
+                  })}
                 </div>
                 <div
                   style={{
@@ -837,12 +838,12 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   {/*>*/}
                   {/*  {'CLEAR ALL'}*/}
                   {/*</div>*/}
-                  <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                  <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid" />
                   <div
                     data-tip="Click to upload selected files"
                     className="button-btn w-120"
                     onClick={async () => {
-                      this.setState({loading: true});
+                      this.setState({ loading: true });
                       console.info('save this.state.uploadFileList', this.state.uploadFileList)
                       if (!this.state.uploadFileList[0].files?.length) {
                         this.state.uploadFileList[0].errorFileRequired = "File is required!"
@@ -890,7 +891,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
 
                       const url = `/api/p1-files-upload`;
                       const method = 'POST';
-                      await this.setState({loading: true})
+                      await this.setState({ loading: true })
                       let rp = await fetch(url,
                         {
                           headers: new Headers({
@@ -904,11 +905,11 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                         .then(response => rp = response)
                         .catch((error) => {
                           console.error('Error:', error);
-                          this.setState({loading: false});
+                          this.setState({ loading: false });
                         });
-                      await this.setState({loading: false})
+                      await this.setState({ loading: false })
                       if (rp?.success) {
-                        this.setState({loading: false});
+                        this.setState({ loading: false });
                         await Swal.fire({
                           html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
                           icon: 'success',
@@ -923,7 +924,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                         //     data: rp.response
                         //   }
                         // })
-                        this.setState({loading: false});
+                        this.setState({ loading: false });
                         Swal.fire({
                           html: `<p style='text-align: center; font-size: 14px;'>${rp?.errorDescription || rp?.message}</p>`,
                           icon: 'error',
@@ -934,7 +935,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   >
                     <span>{'UPLOAD'}</span>
                   </div>
-                  <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                  <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid" />
                   <div
                     data-tip="Click to refresh page"
                     className="button-btn w-120 ml-10"
@@ -952,81 +953,81 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                   <div style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto', width: '100%' }}>
                     <table className="table">
                       <thead className="thead-dark">
-                      <tr>
-                        <th className="table-th" scope="col">MCU SN</th>
-                        <th className="table-th" scope="col">FILE NAME</th>
-                        <th className="table-th" scope="col">UPLOADED BY</th>
-                        <th className="table-th" scope="col">UPLOADED DATE TIME</th>
-                        {this.props?.userInfo?.authorities.filter(auth => auth.authority === "SUPER_ADMIN" || auth.authority === "SUB_ADMIN").length && (
-                          <th className="table-th" scope="col">ACTION</th>
-                        )}
-                      </tr>
+                        <tr>
+                          <th className="table-th" scope="col">MCU SN</th>
+                          <th className="table-th" scope="col">FILE NAME</th>
+                          <th className="table-th" scope="col">UPLOADED BY</th>
+                          <th className="table-th" scope="col">UPLOADED DATE TIME</th>
+                          {this.props?.userInfo?.authorities.filter(auth => auth.authority === "SUPER_ADMIN" || auth.authority === "SUB_ADMIN").length && (
+                            <th className="table-th" scope="col">ACTION</th>
+                          )}
+                        </tr>
                       </thead>
                       <tbody>
-                      {(this.state.p1Files || [])
-                        .map((it, index) => {
-                          return (
-                            <tr
-                              key={index}
-                              style={{
-                                alignItems: 'center',
-                                backgroundColor: '#fff',
-                                color: '#000000',
-                              }}
-                            >
-                              <td className="table-td">
-                                <span>{it.originalName.replace(/^P1QA_\d{4}\d{2}\d{2}_(\w+)\.((PDF)|(pdf))$/, '$1')}</span>
-                              </td>
-                              <td className="table-td">
-                                <a href={'/api/file/' + it.uid + '/' + it.id} target='_blank'>{it.originalName}</a>
-                              </td>
-                              <td className="table-td">
-                                <span>{it.uploadedBy}</span>
-                              </td>
-                              <td className="table-td">
-                                <span>{!!it.createdDate ? moment(it.createdDate).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
-                              </td>
-                              {this.props?.userInfo?.authorities.filter(auth => auth.authority === "SUPER_ADMIN" || auth.authority === "SUB_ADMIN").length && (
-                                <td className="table-td" scope="col">
-                                  <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
-                                  <div
-                                    className="button-icon ml-5"
-                                    data-tip="Click to delete this file"
-                                    onClick={async () => {
-                                      let result = await Swal.fire({
-                                        html: `<p style='text-align: center; font-size: 14px;'>Are you sure?</p>`,
-                                        icon: 'question',
-                                        confirmButtonText: 'OK',
-                                        cancelButtonText: 'Cancel',
-                                        showCancelButton: true,
-                                      });
-                                      if (result && result.isConfirmed) {
-                                        let rp = await deleteP1File({ altName: it.altName });
-                                        if (rp.success) {
-                                          await Swal.fire({
-                                            html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
-                                            icon: 'success',
-                                            confirmButtonText: 'OK',
-                                          });
-                                          window.location.href = window.location.href;
-                                        } else {
-                                          Swal.fire({
-                                            html: `<p style='text-align: center; font-size: 14px;'>${rp.errorDescription || rp.message}</p>`,
-                                            icon: 'error',
-                                            confirmButtonText: 'OK',
-                                          });
-                                        }
-                                      }
-                                    }}
-                                  >
-                                    <span><i className="fa fa-trash-o"/></span>
-                                  </div>
+                        {(this.state.p1Files || [])
+                          .map((it, index) => {
+                            return (
+                              <tr
+                                key={index}
+                                style={{
+                                  alignItems: 'center',
+                                  backgroundColor: '#fff',
+                                  color: '#000000',
+                                }}
+                              >
+                                <td className="table-td">
+                                  <span>{it.originalName.replace(/^P1QA_\d{4}\d{2}\d{2}_(\w+)\.((PDF)|(pdf))$/, '$1')}</span>
                                 </td>
-                              )}
-                            </tr>
-                          );
-                        })
-                      }
+                                <td className="table-td">
+                                  <a href={'/api/file/' + it.uid + '/' + it.id} target='_blank'>{it.originalName}</a>
+                                </td>
+                                <td className="table-td">
+                                  <span>{it.uploadedBy}</span>
+                                </td>
+                                <td className="table-td">
+                                  <span>{!!it.createdDate ? moment(it.createdDate).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
+                                </td>
+                                {this.props?.userInfo?.authorities.filter(auth => auth.authority === "SUPER_ADMIN" || auth.authority === "SUB_ADMIN").length && (
+                                  <td className="table-td" scope="col">
+                                    <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid" />
+                                    <div
+                                      className="button-icon ml-5"
+                                      data-tip="Click to delete this file"
+                                      onClick={async () => {
+                                        let result = await Swal.fire({
+                                          html: `<p style='text-align: center; font-size: 14px;'>Are you sure?</p>`,
+                                          icon: 'question',
+                                          confirmButtonText: 'OK',
+                                          cancelButtonText: 'Cancel',
+                                          showCancelButton: true,
+                                        });
+                                        if (result && result.isConfirmed) {
+                                          let rp = await deleteP1File({ altName: it.altName });
+                                          if (rp.success) {
+                                            await Swal.fire({
+                                              html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
+                                              icon: 'success',
+                                              confirmButtonText: 'OK',
+                                            });
+                                            window.location.href = window.location.href;
+                                          } else {
+                                            Swal.fire({
+                                              html: `<p style='text-align: center; font-size: 14px;'>${rp.errorDescription || rp.message}</p>`,
+                                              icon: 'error',
+                                              confirmButtonText: 'OK',
+                                            });
+                                          }
+                                        }
+                                      }}
+                                    >
+                                      <span><i className="fa fa-trash-o" /></span>
+                                    </div>
+                                  </td>
+                                )}
+                              </tr>
+                            );
+                          })
+                        }
                       </tbody>
                     </table>
                     <div
@@ -1089,40 +1090,40 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                       <div style={{ fontWeight: 500, fontSize: '18px' }}>
                         {'Error on upload file(s). Please check the list below.'}
                       </div>
-                      <div style={{maxHeight: '350px', overflow: 'auto', height: '100%'}}>
+                      <div style={{ maxHeight: '350px', overflow: 'auto', height: '100%' }}>
                         <table className="table">
                           <thead className="thead-dark">
-                          <tr>
-                            <th className="table-th" scope="col">MCU UUID</th>
-                            <th className="table-th" scope="col">FILE NAME</th>
-                            <th className="table-th" scope="col">ERROR</th>
-                          </tr>
+                            <tr>
+                              <th className="table-th" scope="col">MCU UUID</th>
+                              <th className="table-th" scope="col">FILE NAME</th>
+                              <th className="table-th" scope="col">ERROR</th>
+                            </tr>
                           </thead>
                           <tbody>
-                          {(this.state.uploadFileError?.data || [])
-                            .map((it, index) => {
-                              return (
-                                <tr
-                                  key={index}
-                                  style={{
-                                    alignItems: 'center',
-                                    backgroundColor: '#fff',
-                                    color: '#000000',
-                                  }}
-                                >
-                                  <td className="table-td">
-                                    <span>{it.uid}</span>
-                                  </td>
-                                  <td className="table-td">
-                                    <span>{it.fileName}</span>
-                                  </td>
-                                  <td className="table-td">
-                                    <span>{it.error}</span>
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          }
+                            {(this.state.uploadFileError?.data || [])
+                              .map((it, index) => {
+                                return (
+                                  <tr
+                                    key={index}
+                                    style={{
+                                      alignItems: 'center',
+                                      backgroundColor: '#fff',
+                                      color: '#000000',
+                                    }}
+                                  >
+                                    <td className="table-td">
+                                      <span>{it.uid}</span>
+                                    </td>
+                                    <td className="table-td">
+                                      <span>{it.fileName}</span>
+                                    </td>
+                                    <td className="table-td">
+                                      <span>{it.error}</span>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            }
                           </tbody>
                         </table>
                       </div>
@@ -1165,10 +1166,10 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
 }
 
 Homepage = require('react-redux').connect((state, ownProps) => {
-    return {
-      userInfo: state.userInfo || {},
-    }
-  },
+  return {
+    userInfo: state.userInfo || {},
+  }
+},
   (dispatch) => ({
     dispatch
   }))(Homepage);

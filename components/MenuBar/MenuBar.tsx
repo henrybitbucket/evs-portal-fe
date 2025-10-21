@@ -1,4 +1,4 @@
-import React, { createRef} from 'react';
+import React, { createRef } from 'react';
 import Router from 'next/router';
 import css from 'styled-jsx/css';
 import I18nLink from '@app/components/I18nLink';
@@ -21,6 +21,7 @@ const styles = css`
 `;
 
 const MENU_BAR_WIDTH = "menuBarWidth";
+const MENU_BAR_STATE = "menuBarState";
 
 const trustPaths = ['/', '/auth/signin', '/tc-commands', '/devices', '/user-list', '/firm-ware', '/exports', '/meter-commissioning-report', '/upgrade-firmware', '/device-group', '/data-settings', '/meter-clients', '/vendors', '/dms-locks', '/dms-lock-event-logs', '/p2-workers', '/batch-process-logs', '/deployments', '/task-schedule', '/report', '/report-repository', '/building', '/units', '/floor-level', '/building-unit', '/audit', '/roles', '/group', '/my-group', '/no-authorization', '/upload', '/setting', '/capp/application/:id', '/address-logs', '/p2-step', '/p1-detail-report', '/p1-summary-report', '/p2-provisioning-report', '/p2-ack-report', '/device-logs', '/relay-status-command-logs', '/p1-online-check', '/project-tag', '/company', '/devices-meter', '/dms-site-management', '/dms-work-orders', '/dms-project-management', '/dms-application-management', '/view-management', '/dms-vendor-management', '/e-code', '/dms-locks-access-permission'];
 
@@ -168,7 +169,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       startMenuBarWidth: this.state.menuWidth,
     })
 
-    if (this.props.isOpenSideMenu || this.props.isToggle){
+    if (this.props.isOpenSideMenu || this.props.isToggle) {
       document.addEventListener("mousemove", this.handleMouseMove);
     }
     document.addEventListener("mouseup", this.handleMouseUp);
@@ -177,7 +178,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
     document.getElementsByClassName("main-layout")[0].setAttribute(
       "style",
       `user-select: none;`
-      )
+    )
   };
 
   handleMouseUp = () => {
@@ -194,45 +195,45 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
   };
 
   handleMouseMove = (e: MouseEvent) => {
-      if(!this.state.isResizing) return;
+    if (!this.state.isResizing) return;
 
-      //set kich thuoc menubar
-      const delta = e.clientX - this.state.initialX;
-      const newWidth = this.state.startMenuBarWidth + delta;
+    //set kich thuoc menubar
+    const delta = e.clientX - this.state.initialX;
+    const newWidth = this.state.startMenuBarWidth + delta;
 
-      //limit width
-      if(newWidth >= this.state.menuBarMinWidth && newWidth < this.state.menuBarMaxWidth){
-        this.setState({
-          menuWidth: newWidth
-        })
+    //limit width
+    if (newWidth >= this.state.menuBarMinWidth && newWidth < this.state.menuBarMaxWidth) {
+      this.setState({
+        menuWidth: newWidth
+      })
 
-        localStorage.setItem(MENU_BAR_WIDTH, newWidth);
-      }
+      localStorage.setItem(MENU_BAR_WIDTH, newWidth);
+    }
 
-      if(newWidth < this.state.menuBarMinWidth){
-        localStorage.setItem(MENU_BAR_WIDTH, this.state.menuBarMinWidth);
-      }
+    if (newWidth < this.state.menuBarMinWidth) {
+      localStorage.setItem(MENU_BAR_WIDTH, this.state.menuBarMinWidth);
+    }
 
-      document.getElementsByClassName("site-menubar-body")[0].setAttribute(
-          "style",
-          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
-      );
-      document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
-          "style",
-          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
-      );
-      document.getElementsByClassName("site-menubar")[0].setAttribute(
-          "style",
-          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
-      )
-      document.getElementsByClassName("navbar-header")[0].setAttribute(
-          "style",
-          `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
-      )
-      document.getElementsByClassName("page")[0].setAttribute(
-          "style",
-          `margin-left: ${this.state.menuWidth}px !important; min-width: unset !important;`
-      )
+    document.getElementsByClassName("site-menubar-body")[0].setAttribute(
+      "style",
+      `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
+    );
+    document.getElementsByClassName("site-menubar-footer")[0].setAttribute(
+      "style",
+      `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
+    );
+    document.getElementsByClassName("site-menubar")[0].setAttribute(
+      "style",
+      `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
+    )
+    document.getElementsByClassName("navbar-header")[0].setAttribute(
+      "style",
+      `width: ${this.state.menuWidth}px !important; min-width: unset !important;`
+    )
+    document.getElementsByClassName("page")[0].setAttribute(
+      "style",
+      `margin-left: ${this.state.menuWidth}px !important; min-width: unset !important;`
+    )
   };
 
   logOut = async () => {
@@ -260,7 +261,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
         menuDms = JSON.parse(item?.items);
       }
     })
-    menu = this.state.appCode === 'MMS' ? menuMms :menuDms;
+    menu = this.state.appCode === 'MMS' ? menuMms : menuDms;
     menu.sort((o1, o2) => Number(o1.order) - Number(o2.order));
     menu.forEach(m => (m.children || []).sort((o1, o2) => Number(o1.order) - Number(o2.order)));
     if (typeof window == 'object') {
@@ -270,13 +271,13 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
       if (!!m.path && !trustPaths.includes(m.path) && typeof window === 'object' && window._nextRoutes) {
         try {
           window._nextRoutes.add(m.name, m.path, '_error_404');
-        } catch(e) {}
+        } catch (e) { }
       }
       (m.children || []).forEach(mc => {
         if (!!mc.path && !trustPaths.includes(mc.path) && typeof window === 'object' && window._nextRoutes) {
           try {
             window._nextRoutes.add(mc.name, mc.path, '_error_404');
-          } catch(e) {}
+          } catch (e) { }
         }
       })
     })
@@ -346,8 +347,8 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
         {this.state.permissions != null ?
           <div
             className="site-menubar menu"
-            // onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
-            // onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
+          // onMouseOver={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(true)}
+          // onMouseLeave={() => !this.props.isOpenSideMenu && this.props.toggleSiteMenu(false)}
           >
             <div
               ref={this.container}
@@ -357,7 +358,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                 transition: this.state.isResizing ? "none" : "width 0.1s",
               }}
             >
-               <div
+              <div
                 onMouseDown={this.handleMouseDown}
                 style={{
                   position: 'absolute',
@@ -415,7 +416,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                         paddingLeft: '20px',
                         opacity: '0.5',
                       }}
-                    ><i className='fa fa-map-marker' style={{ marginRight: '5px', }}/>Singapore
+                    ><i className='fa fa-map-marker' style={{ marginRight: '5px', }} />Singapore
                     </div>
                     <div
                       style={{
@@ -424,7 +425,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                         fontSize: '18px',
                         color: '#fff'
                       }}>
-                      <i className="fa fa-gear"/>
+                      <i className="fa fa-gear" />
                     </div>
                   </div>
                 </div>
@@ -436,67 +437,68 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                   {(this.state.menuItems || []).map((it, idx) => {
                     return (
                       it.children?.length ? (this.showMenu(it) ? (
-                          <li
-                            className={
-                              "site-menu-item has-sub " +
-                              (!!this.state.userCollapse && it.id === 'user-management' ||
-                              !!this.state.deviceManagementCollapse && it.id === 'device-management'  ||
-                              !!this.state.buildingCollapse && it.id === 'address-management'  ||
-                              !!this.state.reportCollapse && it.id === 'report-management'  ||
-                              !!this.state.p2Collapse && it.id === 'p2-provisioning'  ||
+                        <li
+                          className={
+                            "site-menu-item has-sub " +
+                            (!!this.state.userCollapse && it.id === 'user-management' ||
+                              !!this.state.deviceManagementCollapse && it.id === 'device-management' ||
+                              !!this.state.buildingCollapse && it.id === 'address-management' ||
+                              !!this.state.reportCollapse && it.id === 'report-management' ||
+                              !!this.state.p2Collapse && it.id === 'p2-provisioning' ||
                               it.status === 'open' ? 'open' : '')
-                            }
-                            key={idx + '_'}>
-                            <a
-                              href="javascript:void(0)"
-                              onClick={() => {
-                                it.status = it.status === 'open' ? ''
-                                  : (!!this.state.userCollapse && it.id === 'user-management'  ||
-                                  !!this.state.deviceManagementCollapse && it.id === 'device-management'  ||
-                                  !!this.state.buildingCollapse && it.id === 'address-management'  ||
-                                  !!this.state.reportCollapse && it.id === 'report-management'  ||
+                          }
+                          key={idx + '_'}>
+                          <a
+                            href="javascript:void(0)"
+                            onClick={() => {
+                              it.status = it.status === 'open' ? ''
+                                : (!!this.state.userCollapse && it.id === 'user-management' ||
+                                  !!this.state.deviceManagementCollapse && it.id === 'device-management' ||
+                                  !!this.state.buildingCollapse && it.id === 'address-management' ||
+                                  !!this.state.reportCollapse && it.id === 'report-management' ||
                                   !!this.state.p2Collapse && it.id === 'p2-provisioning'
-                                    ? '' : 'open');
-                                this.setState({
-                                  menuItems: [].concat(this.state.menuItems),
-                                  userCollapse: false,
-                                  deviceManagementCollapse: false,
-                                });
-                              }}
-                            >
-                              <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true"/>
-                              <span className="site-menu-title">{it.displayLabel || it.name}</span>
-                              <span className="site-menu-arrow"/>
-                            </a>
-                            <ul className="site-menu-sub">
-                              {it.children.map((subIt, subIdx) => {
-                                return (
-                                  this.showMenu(subIt) ? (
-                                    <I18nLink
-                                      activeClassName="active"
-                                      //href="javascript: void(0);"
-                                      index={idx + '_' + subIdx} key={idx + '_' + subIdx}>
-                                      <li className="site-menu-item">
-                                        <a href="javascript:void(0)"
-                                           style={{
-                                             color: '#fff',
-                                             backgroundColor: 'inherit',
-                                             paddingLeft: '55px',
-                                           }}
-                                           onClick={() => {
-                                             require('@app/utils/next-routes').Router.pushRoute(subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
-                                           }}
-                                        >
-                                          <i className={"site-menu-icon " + (subIt.className || "").replace('fa-fw', '')} aria-hidden="true"/>
-                                          <span className="site-menu-title">{subIt.displayLabel || subIt.name}</span>
-                                        </a>
-                                      </li>
-                                    </I18nLink>
-                                  ) : null )
-                              })}
-                            </ul>
-                          </li>
-                        ) : null)
+                                  ? '' : 'open');
+                              this.setState({
+                                menuItems: [].concat(this.state.menuItems),
+                                userCollapse: false,
+                                deviceManagementCollapse: false,
+                              });
+                            }}
+                          >
+                            <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true" />
+                            <span className="site-menu-title">{it.displayLabel || it.name}</span>
+                            <span className="site-menu-arrow" />
+                          </a>
+                          <ul className="site-menu-sub">
+                            {it.children.map((subIt, subIdx) => {
+                              return (
+                                this.showMenu(subIt) ? (
+                                  <I18nLink
+                                    activeClassName="active"
+                                    //href="javascript: void(0);"
+                                    index={idx + '_' + subIdx} key={idx + '_' + subIdx}>
+                                    <li className="site-menu-item">
+                                      <a href="javascript:void(0)"
+                                        style={{
+                                          color: '#fff',
+                                          backgroundColor: 'inherit',
+                                          paddingLeft: '55px',
+                                        }}
+                                        onClick={(e) => {
+                                          e.preventDefault()
+                                          require('@app/utils/next-routes').Router.pushRoute(subIt.path || ('/' + subIt.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
+                                        }}
+                                      >
+                                        <i className={"site-menu-icon " + (subIt.className || "").replace('fa-fw', '')} aria-hidden="true" />
+                                        <span className="site-menu-title">{subIt.displayLabel || subIt.name}</span>
+                                      </a>
+                                    </li>
+                                  </I18nLink>
+                                ) : null)
+                            })}
+                          </ul>
+                        </li>
+                      ) : null)
                         : (this.showMenu(it) ? (
                           <I18nLink
                             activeClassName={!!this.state.dashboardCollapse ? 'active' : 'none'}
@@ -513,7 +515,7 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                                   require('@app/utils/next-routes').Router.pushRoute(it.path || ('/' + it.name.toLowerCase().replace(/[ ]/g, '-') + '-list'));
                                 }}
                               >
-                                <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true"/>
+                                <i className={"site-menu-icon " + (it.className || "").replace('fa-fw', '')} aria-hidden="true" />
                                 <span className="site-menu-title">{it.name}</span>
                               </a>
                             </li>
@@ -532,16 +534,16 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
                 href="javascript: void(0);" className="fold-show" data-placement="top" data-toggle="tooltip"
                 data-original-title="Settings"
               >
-                <span className="icon wb-settings" aria-hidden="true"/>
+                <span className="icon wb-settings" aria-hidden="true" />
               </a>
               <I18nLink href="javascript: void(0);">
                 <a href="javascript: void(0);">
-                  <span className="icon wb-user" aria-hidden="true"/>
+                  <span className="icon wb-user" aria-hidden="true" />
                 </a>
               </I18nLink>
               <a
                 href="javascript: void(0);" data-placement="top" data-toggle="tooltip" data-original-title="Logout">
-                <span className="icon wb-power" aria-hidden="true"/>
+                <span className="icon wb-power" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -552,13 +554,13 @@ class MenuBar extends React.Component<INavbarHeaderProps, any> {
 }
 
 MenuBar = require('react-redux').connect((state, ownProps) => {
-      return {
-        alarms: state.header?.alarms || 0,
-        userInfo: state.userInfo || {},
-      }
-    },
-    (dispatch) => ({
-      dispatch
-    }))(MenuBar);
+  return {
+    alarms: state.header?.alarms || 0,
+    userInfo: state.userInfo || {},
+  }
+},
+  (dispatch) => ({
+    dispatch
+  }))(MenuBar);
 
 export default withNamespaces('common')(MenuBar);

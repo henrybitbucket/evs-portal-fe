@@ -383,7 +383,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
         queryMsn,
         userSent,
         queryUid,
-      }, asPath, req, initialState: {}
+      }, asPath, req, initialState: { }
     } = args;
 
     const pageNumber = Number(page) || 1;
@@ -689,62 +689,62 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                 <div style={{ display: 'flex', flexDirection: 'column', overflowX: 'auto', width: '100%' }}>
                   <table className="table">
                     <thead className="thead-dark">
-                    <tr>
-                      <th className="table-th" scope="col">MCU SN</th>
-                      <th className="table-th" scope="col">MCU UUID</th>
-                      <th className="table-th" scope="col">ESIM ID</th>
-                      <th className="table-th" scope="col">MSN</th>
-                      <th className="table-th" scope="col">COUPLE STATE</th>
-                      <th className="table-th" scope="col">VERSION</th>
-                      <th className="table-th" scope="col">VENDOR</th>
-                      <th className="table-th" scope="col">STATUS</th>
-                      <th className="table-th" scope="col">USER SENT</th>
-                      <th className="table-th" scope="col">LAST SENT</th>
-                      <th className="table-th" scope="col">LAST RECEIVER</th>
-                    </tr>
+                      <tr>
+                        <th className="table-th" scope="col">MCU SN</th>
+                        <th className="table-th" scope="col">MCU UUID</th>
+                        <th className="table-th" scope="col">ESIM ID</th>
+                        <th className="table-th" scope="col">MSN</th>
+                        <th className="table-th" scope="col">COUPLE STATE</th>
+                        <th className="table-th" scope="col">VERSION</th>
+                        <th className="table-th" scope="col">VENDOR</th>
+                        <th className="table-th" scope="col">STATUS</th>
+                        <th className="table-th" scope="col">USER SENT</th>
+                        <th className="table-th" scope="col">LAST SENT</th>
+                        <th className="table-th" scope="col">LAST RECEIVER</th>
+                      </tr>
                     </thead>
                     <tbody>
-                    {(this.state.statuses || [])
-                      .map((it, index) => {
-                        return (
-                          <tr key={index}>
-                            <td className="table-td">
-                              {it.sn}
-                            </td>
-                            <td className="table-td">
-                              <span>{it.uid}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.cid}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.msn}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.type}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.version}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it?.vendor?.name}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.p1Online}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.p1OnlineLastUserSent}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.p1OnlineLastSent ? moment(new Date(it.p1OnlineLastSent)).format('YYYY/MM/DD HH:mm:ss') : ''}</span>
-                            </td>
-                            <td className="table-td">
-                              <span>{it.p1OnlineLastReceived ? moment(new Date(it.p1OnlineLastReceived)).format('YYYY/MM/DD HH:mm:ss') : ''}</span>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    }
+                      {(this.state.statuses || [])
+                        .map((it, index) => {
+                          return (
+                            <tr key={index}>
+                              <td className="table-td">
+                                {it.sn}
+                              </td>
+                              <td className="table-td">
+                                <span>{it.uid}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.cid}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.msn}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.type}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.version}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it?.vendor?.name}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.p1Online}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.p1OnlineLastUserSent}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.p1OnlineLastSent ? moment(new Date(it.p1OnlineLastSent)).format('YYYY/MM/DD HH:mm:ss') : ''}</span>
+                              </td>
+                              <td className="table-td">
+                                <span>{it.p1OnlineLastReceived ? moment(new Date(it.p1OnlineLastReceived)).format('YYYY/MM/DD HH:mm:ss') : ''}</span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      }
                     </tbody>
                   </table>
                   <div
@@ -762,26 +762,26 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                       style={{ justifyContent: 'flex-end', marginBottom: '25px' }}
                     >
                       {this.state.totalRecords > this.state.pageSize && this.state.totalPages >= 2 &&
-                      <Pagination
-                        href={this.props.asPath.replace(/\?.*/g, '')}
-                        totalRecords={this.props.totalRecords}
-                        totalPages={this.props.totalPages}
-                        onPageChanged={(query) => {
+                        <Pagination
+                          href={this.props.asPath.replace(/\?.*/g, '')}
+                          totalRecords={this.props.totalRecords}
+                          totalPages={this.props.totalPages}
+                          onPageChanged={(query) => {
 
-                          let pathname = window.location.pathname;
-                          const search = window.location.search
-                            .replace(/&{0,}((pageSize)|(pageIndex)|(page))=[^\?&]+/g, '');
-                          if (!search) {
-                            pathname += '?page=' + query.pageIndex;
-                          } else {
-                            pathname += search + '&page=' + query.pageIndex;
-                          }
-                          require('@app/utils/next-routes').Router.pushRoute(pathname);
-                        }}
-                        pageIndex={this.props.pageIndex}
-                        pageSize={this.props.pageSize}
-                        styleItemActive={{ backgroundColor: 'green', color: '#ffffff' }}
-                      />
+                            let pathname = window.location.pathname;
+                            const search = window.location.search
+                              .replace(/&{0,}((pageSize)|(pageIndex)|(page))=[^\?&]+/g, '');
+                            if (!search) {
+                              pathname += '?page=' + query.pageIndex;
+                            } else {
+                              pathname += search + '&page=' + query.pageIndex;
+                            }
+                            require('@app/utils/next-routes').Router.pushRoute(pathname);
+                          }}
+                          pageIndex={this.props.pageIndex}
+                          pageSize={this.props.pageSize}
+                          styleItemActive={{ backgroundColor: 'green', color: '#ffffff' }}
+                        />
                       }
                     </div>
                   </div>

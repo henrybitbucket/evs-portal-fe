@@ -7,6 +7,11 @@ import { Avatar } from '@app/components/Common';
 import { INavbarHeaderProps } from './types';
 import { tokenName } from '@app/utils/public-config';
 import { setCookie, getCookie, eraseCookie } from '@app/utils/cookie';
+
+
+
+const MENU_BAR_STATE = "menuBarState"
+
 class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
 
   state = {
@@ -39,7 +44,7 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
   }
 
   changeAppCode = (appCode: string) => {
-    this.setState({appCode}, () => {
+    this.setState({ appCode }, () => {
       setCookie('app_code', appCode);
       if (appCode !== 'DMS') {
         window.location.href = '/';
@@ -51,10 +56,15 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
   }
 
   async componentDidMount() {
+    this.fetchData();
+    this.intv = setInterval(async () => {
       this.fetchData();
-      this.intv = setInterval(async () => {
-          this.fetchData();
-      }, 5000)
+    }, 5000)
+
+    let menuState = localStorage.getItem(MENU_BAR_STATE);
+    if (menuState)
+      this.props.toggleSiteMenu(menuState ? JSON.parse(menuState) : false);
+
   }
 
   componentWillUnmount() {
@@ -62,28 +72,29 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
   }
 
   fetchData = async () => {
-      if (getCookie('app_code') !== 'MMS') {
-        return;
-      }
-      let rp = await countAlarms();
+    if (getCookie('app_code') !== 'MMS') {
+      return;
+    }
+    let rp = await countAlarms();
 
-      this.setState({
-          data: {
-              ...this.state.data,
-              alarms: rp.response?.countAlarms || 0,
-          }
-      }, () => {
-        this.props.dispatch({
-          type: 'HEADER_STATUS',
-          headerStatus: {
-            alarms: rp.response?.countAlarms || 0,
-            mqttAddress: rp.response?.mqttAddress,
-            mqttStatus: rp.response?.mqttStatus,
-            countDevices: rp.response?.countDevices,
-            systemInformation: rp.response?.systemInformation,
-            appServerCheck: rp.response?.appServerCheck,
-          }});
-      })
+    this.setState({
+      data: {
+        ...this.state.data,
+        alarms: rp.response?.countAlarms || 0,
+      }
+    }, () => {
+      this.props.dispatch({
+        type: 'HEADER_STATUS',
+        headerStatus: {
+          alarms: rp.response?.countAlarms || 0,
+          mqttAddress: rp.response?.mqttAddress,
+          mqttStatus: rp.response?.mqttStatus,
+          countDevices: rp.response?.countDevices,
+          systemInformation: rp.response?.systemInformation,
+          appServerCheck: rp.response?.appServerCheck,
+        }
+      });
+    })
   }
 
   render() {
@@ -181,7 +192,10 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
         `}</style>
         <div className="navbar-header">
           <button
-            onClick={() => this.props.toggleSiteMenu(!this.props.isToggle)}
+            onClick={() => {
+              this.props.toggleSiteMenu(!this.props.isToggle)
+
+            }}
             type="button"
             className={`navbar-toggler
             hamburger hamburger-close navbar-toggler-left ${!this.props.isToggle ? 'hided' : ''}`}
@@ -210,19 +224,21 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
-          <div className="navbar-brand navbar-brand-center" data-toggle="gridmenu" style={{width: '100%', padding: "unset"}}>
-            <div style={{minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%'}} className='group-brand-logo1'>
-                  <img className="navbar-brand-logo1" src="/static/images/logo2.png" title="Remark" style={{display: 'none'}}
-                       onClick={() => {
-                         this.props.toggleSiteMenu(!this.props.isToggle);
-                       }}
-                  />
-                <i className="fa fa-bars" aria-hidden="true"
-                   style={{fontSize: '17px', color: 'white', width: '17px'}}
-                   onClick={() => {
-                       this.props.toggleSiteMenu(!this.props.isToggle);
-                   }}
-                />
+          <div className="navbar-brand navbar-brand-center" data-toggle="gridmenu" style={{ width: '100%', padding: "unset" }}>
+            <div style={{ minWidth: '80px', minHeight: '48px', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }} className='group-brand-logo1'>
+              <img className="navbar-brand-logo1" src="/static/images/logo2.png" title="Remark" style={{ display: 'none' }}
+                onClick={() => {
+                  console.log("toggle menu", !this.props.isToggle)
+                }}
+              />
+              <i className="fa fa-bars" aria-hidden="true"
+                style={{ fontSize: '17px', color: 'white', width: '17px' }}
+                onClick={() => {
+                  this.props.toggleSiteMenu(!this.props.isToggle);
+                  //handle save state to local
+                  localStorage.setItem(MENU_BAR_STATE, JSON.stringify(!this.props.isToggle))
+                }}
+              />
 
               <div
                 style={{
@@ -254,38 +270,38 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
             <ul className="nav navbar-toolbar navbar-right navbar-toolbar-right">
 
               {this.state.appCode === 'MMS' && (
-              <li className="nav-item dropdown alarms">
-                <span
-                  onClick={() => {
-                    require('@app/utils/next-routes').Router.pushRoute('/');
-                  }}
-                >{'Alarms ' + (this.props.alarms | 0)}</span>
-              </li>
+                <li className="nav-item dropdown alarms">
+                  <span
+                    onClick={() => {
+                      require('@app/utils/next-routes').Router.pushRoute('/');
+                    }}
+                  >{'Alarms ' + (this.props.alarms | 0)}</span>
+                </li>
               )}
               {!!this.props.userInfo?.appCodes?.length && (
-              <li className="nav-item dropdown">
-                <Dropdown isOpen={this.state.dropdownLanOpen} toggle={this.toggleLang}>
-                  <DropdownToggle href="javascript:void(0)" tag="a" className="nav-link">
-                    <img src={'static/images/' + (this.state.appCode || 'MMS') + '.png'} style={{height: '38px', width: '38px', objectFit: 'contain'}}/>
-                  </DropdownToggle>
+                <li className="nav-item dropdown">
+                  <Dropdown isOpen={this.state.dropdownLanOpen} toggle={this.toggleLang}>
+                    <DropdownToggle href="javascript:void(0)" tag="a" className="nav-link">
+                      <img src={'static/images/' + (this.state.appCode || 'MMS') + '.png'} style={{ height: '38px', width: '38px', objectFit: 'contain' }} />
+                    </DropdownToggle>
 
-                  <DropdownMenu>
-                    {this.props.userInfo?.appCodes.map((ac, idx) => {
-                      return (
-                        <DropdownItem
-                          tag="a"
-                          href="javascript:void(0)"
-                          onClick={() => this.changeAppCode(ac)}
-                          key={ac}
-                        >
-                          <img src={'static/images/' + ac + '.png'} style={{width: '38px', objectFit: 'contain', marginRight: '5px'}}/>
-                          Dashboard
-                        </DropdownItem>
-                      )
-                    })}
-                  </DropdownMenu>
-                </Dropdown>
-              </li>
+                    <DropdownMenu>
+                      {this.props.userInfo?.appCodes.map((ac, idx) => {
+                        return (
+                          <DropdownItem
+                            tag="a"
+                            href="javascript:void(0)"
+                            onClick={() => this.changeAppCode(ac)}
+                            key={ac}
+                          >
+                            <img src={'static/images/' + ac + '.png'} style={{ width: '38px', objectFit: 'contain', marginRight: '5px' }} />
+                            Dashboard
+                          </DropdownItem>
+                        )
+                      })}
+                    </DropdownMenu>
+                  </Dropdown>
+                </li>
               )}
               <li className="nav-item dropdown">
                 <UncontrolledDropdown setActiveFromChild>
@@ -323,13 +339,13 @@ class NavbarHeader extends React.PureComponent<INavbarHeaderProps, any> {
 }
 
 NavbarHeader = require('react-redux').connect((state, ownProps) => {
-    return {
-        alarms: state.header?.alarms || 0,
-        userInfo: state.userInfo || {},
-        isToggle: !!state['site-menu']?.isToggleMenu,
-    }
+  return {
+    alarms: state.header?.alarms || 0,
+    userInfo: state.userInfo || {},
+    isToggle: !!state['site-menu']?.isToggleMenu,
+  }
 },
-(dispatch) => ({
+  (dispatch) => ({
     dispatch
-}))(NavbarHeader);
+  }))(NavbarHeader);
 export default withNamespaces('common')(NavbarHeader);
