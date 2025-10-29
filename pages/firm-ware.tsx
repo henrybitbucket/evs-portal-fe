@@ -485,41 +485,60 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                               <span>{it.fileName}</span>
                                                           </td>
                                                           <td style={{ padding: '3px', paddingLeft: '30px' }}>
-                                                              <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
-                                                              <div
-                                                                  data-tip="Click to remove firmware"
-                                                                  className="button-icon"
-                                                                  onClick={async () => {
-                                                                      const result = await Swal.fire({
-                                                                          html: `<p style='text-align: center; font-size: 14px;'>Are you sure?</p>`,
-                                                                          icon: 'question',
-                                                                          confirmButtonText: 'OK',
-                                                                          cancelButtonText: 'Cancel',
-                                                                          showCancelButton: true,
-                                                                      });
-                                                                      if (result && result.isConfirmed) {
-                                                                          const rp = await deleteFirmware({ id: it.id });
-                                                                          if (rp.success) {
-                                                                              await Swal.fire({
-                                                                                  html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
-                                                                                  icon: 'success',
+                                                              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                                                  <div>
+                                                                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                                                                      <div
+                                                                          data-tip="Click to remove firmware"
+                                                                          className="button-icon"
+                                                                          onClick={async () => {
+                                                                              const result = await Swal.fire({
+                                                                                  html: `<p style='text-align: center; font-size: 14px;'>Are you sure?</p>`,
+                                                                                  icon: 'question',
                                                                                   confirmButtonText: 'OK',
-                                                                                });
-                                                                              window.location.href = window.location.href;
-                                                                          } else {
-                                                                              Swal.fire({
-                                                                                  html: `<p style='text-align: center; font-size: 14px;'>${rp.errorDescription || rp.message}</p>`,
-                                                                                  icon: 'error',
-                                                                                  confirmButtonText: 'OK',
+                                                                                  cancelButtonText: 'Cancel',
+                                                                                  showCancelButton: true,
                                                                               });
-                                                                          }
-                                                                      }
-                                                                  }}
-                                                                  >
-                                                                      <span>
-                                                                        <i className="fa fa-trash-o" />
-                                                                      </span>
+                                                                              if (result && result.isConfirmed) {
+                                                                                  const rp = await deleteFirmware({ id: it.id });
+                                                                                  if (rp.success) {
+                                                                                      await Swal.fire({
+                                                                                          html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
+                                                                                          icon: 'success',
+                                                                                          confirmButtonText: 'OK',
+                                                                                        });
+                                                                                      window.location.href = window.location.href;
+                                                                                  } else {
+                                                                                      Swal.fire({
+                                                                                          html: `<p style='text-align: center; font-size: 14px;'>${rp.errorDescription || rp.message}</p>`,
+                                                                                          icon: 'error',
+                                                                                          confirmButtonText: 'OK',
+                                                                                      });
+                                                                                  }
+                                                                              }
+                                                                          }}
+                                                                          >
+                                                                          <span>
+                                                                            <i className="fa fa-trash-o" />
+                                                                          </span>
+                                                                      </div>
                                                                   </div>
+
+                                                                  <div style={{ marginRight: '15px', marginLeft: '5px' }}>
+                                                                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                                                                      <div
+                                                                          data-tip="Click to remove firmware"
+                                                                          className="button-icon"
+                                                                          onClick={async () => {
+                                                                              window.open(window.location.origin + '/api/file/' + it.fileName + '/' + it.id + '?type=firmware', '_blank').focus();
+                                                                          }}
+                                                                      >
+                                                                          <span>
+                                                                            <i style={{opacity: '0.6'}} className="fa fa-download" />
+                                                                          </span>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
                                                           </td>
                                                       </tr>
                                                   );
