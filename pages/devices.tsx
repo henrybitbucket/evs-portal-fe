@@ -6906,77 +6906,73 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
               </button>
             </Modal>
             {!!this.state.mdtPiStatus && (
-              <div
-                style={{
-                  backgroundColor: '#fff',
-                  position: 'fixed',
-                  top: '30%',
-                  left: '35%',
-                  zIndex: 10,
-                  width: '30%',
-                  height: '40%',
-                  borderRadius: '5px',
-                  padding: '30px 30px 15px 30px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  boxShadow: '0 5px 10px rgba(0, 0, 0, 0.45)',
-                  color: '#000000',
-                  justifyContent: 'space-between',
-                }}
+              <Modal
+                  isOpen={!!this.state.mdtPiStatus}
+                  size="lg"
               >
-                <span style={{ fontWeight: 500, fontSize: '18px' }}>
-                  {'Meter client status'}
-                </span>
-                <div style={{ overflow: 'auto', width: '100%', height: '60%', display: 'flex', flexDirection: 'column' }}>
-                  <table className="table" style={{ flex: 1 }}>
-                    <thead className="thead-dark">
-                      <tr>
-                        <th className="table-th" scope="col">IP Address</th>
-                        <th className="table-th" scope="col">IEI</th>
-                        <th className="table-th" scope="col">STATUS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {
-                        this.state.mdtPiStatus.map((r, index) => {
-                          return (
-                            <tr
-                              key={index}
-                              style={{
-                                cursor: 'pointer',
-                                backgroundColor: '#fff',
-                                color: '#000000',
-                              }}
-                            >
-                              <td className="table-td">
-                                {(r.piUuid || '').split('-')[0]}
-                              </td>
-                              <td className="table-td">
-                                {r.ieiId}
-                              </td>
-                              <td className="table-td">
-                                {r.ftpResStatus}
-                              </td>
-                            </tr>
-                          )
-                        })
-                      }
-                    </tbody>
-                  </table>
-                  {!!this.state.mdtPiStatusMessage && (
-                    <span
-                      style={{ color: 'red' }}
-                    >
-                      {this.state.mdtPiStatusMessage}
-                    </span>
-                  )}
-                </div>
+                <ModalHeader> {'Meter client status'}</ModalHeader>
+                <ModalBody style={{
+                  width: '100%',
+                  height: '60%',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  maxHeight: '60vh',
+                  overflowY: 'auto',
+                  marginBottom: '20px'
+                }}>
+
+                  <div style={{ overflow: 'auto', width: '100%', height: '60%', display: 'flex', flexDirection: 'column' }}>
+                    <table className="table" style={{ flex: 1 }}>
+                      <thead className="thead-dark">
+                        <tr>
+                          <th className="table-th" scope="col">IP Address</th>
+                          <th className="table-th" scope="col">IEI</th>
+                          <th className="table-th" scope="col">STATUS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          this.state.mdtPiStatus.map((r, index) => {
+                            return (
+                              <tr
+                                key={index}
+                                style={{
+                                  cursor: 'pointer',
+                                  backgroundColor: '#fff',
+                                  color: '#000000',
+                                }}
+                              >
+                                <td className="table-td">
+                                  {(r.piUuid || '').split('-')[0]}
+                                </td>
+                                <td className="table-td">
+                                  {r.ieiId}
+                                </td>
+                                <td className="table-td">
+                                  {r.ftpResStatus}
+                                </td>
+                              </tr>
+                            )
+                          })
+                        }
+                      </tbody>
+                    </table>
+                    {!!this.state.mdtPiStatusMessage && (
+                      <span
+                        style={{ color: 'red' }}
+                      >
+                        {this.state.mdtPiStatusMessage}
+                      </span>
+                    )}
+                  </div>
+                </ModalBody>
                 <button
                   className="button-btn w-80"
                   style={{
                     alignSelf: 'center',
                     border: 'unset',
                     outline: 'unset',
+                    marginBottom: '15px',
                   }}
                   onClick={() => {
                     this.setState({ mdtPiStatus: undefined, mdtPiStatusMessage: undefined });
@@ -6984,39 +6980,34 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                 >
                   {'Close'}
                 </button>
-              </div>
+              </Modal>
             )}
             {!!this.state.publishStatus && (
-              <div
-                style={{
-                  backgroundColor: '#fff',
-                  position: 'fixed',
-                  top: '30%',
-                  left: '35%',
-                  zIndex: 10,
-                  width: '30%',
-                  height: '40%',
-                  borderRadius: '5px',
-                  padding: '30px 30px 15px 30px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  boxShadow: '0 5px 10px rgba(0, 0, 0, 0.45)',
-                  color: '#000000',
-                  justifyContent: 'space-between',
-                }}
+              <Modal
+                  isOpen={!!this.state.publishStatus}
+                  size="lg"
               >
-                <span style={{ fontWeight: 500, fontSize: '18px' }}>
-                  {'Publish status'}
-                </span>
-                <span style={{ overflow: 'auto', width: '100%', height: '60%' }}>
-                  {this.state.publishStatus}
-                </span>
+                <ModalHeader> {'Publish status'}</ModalHeader>
+                <ModalBody style={{
+                  width: '100%',
+                  height: '60%',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  maxHeight: '60vh',
+                  overflowY: 'auto',
+                  marginBottom: '20px'
+                }}>
+                  <span style={{ overflow: 'auto', width: '100%', height: '60%' }}>
+                    {this.state.publishStatus}
+                  </span>
+                </ModalBody>
                 <button
                   className="button-btn w-80"
                   style={{
                     alignSelf: 'center',
                     border: 'unset',
                     outline: 'unset',
+                    marginBottom: '15px',
                   }}
                   onClick={() => {
                     this.setState({ publishStatus: undefined });
@@ -7024,7 +7015,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                 >
                   {'Close'}
                 </button>
-              </div>
+              </Modal>
             )}
             {!!this.state.handleSubscribeDesc && (
               <div
