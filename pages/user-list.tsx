@@ -1052,10 +1052,14 @@ class PEdit extends React.Component {
         'gender', 'avatar', 'birthDay', 'companyRefId', 'userCompany', 'userCompanyRefId', 'paymentId', 'identification', 'invoiceNo', 'ccName',
         'countryCode', 'lockServerPassword', 'lockServerUsername', 'participant', 'lastLogin', 'token', 'userRegistrationImageName', 'userRegistrationMessage',
         'companyPosition', 'uuidIOS', 'deviceId', 'registeredTime', 'ccValidity', 'ccNum', 'company', 'approved', 'status', 'groupUsers', 'role', 'permissions', 'changePwdRequire',
-        'lastPwd', 'lastChangePwd', 'roles', 'loginOtpRequire', 'updatePwd', 'sendLoginToEmail', 'sendLoginToPhone', 'firstLoginOtpRequire', 'hpwd', 'callingCode', 'phoneNumber',
+        'lastPwd', 'lastChangePwd', 'roles', 'loginOtpRequire', 'updatePwd', 'sendLoginToEmail', 'sendLoginToPhone', 'firstLoginOtpRequire', 'hpwd', 'callingCode', 'phoneNumber', 'autoLogoutUIInactive'
       ],
       isEdit: this.props.isEdit,
     };
+
+    if (this.state.displayValue.autoLogoutUIInactive == -1) {
+        this.state.displayValue.autoLogoutUIInactive = null;
+    }
 
     if (!!this.state.displayValue.callingCode) {
       let country = (this.props.countries || []).filter(c => (c.callingCode || '').replace(/-/g, '') == this.state.displayValue.callingCode)[0]
@@ -1438,6 +1442,45 @@ class PEdit extends React.Component {
           </div>
         </div>
 
+          <div className="form-group ml-10">
+              <label
+                  htmlFor="telephone"
+                  className="col-md-6 control-label visible-lg-block"
+                  style={{
+                      fontSize: "12px",
+                      textAlign: "left",
+                      fontWeight: 500,
+                      color: "#222222"
+                  }}
+              >
+                  Log-off timeout(minutes) :
+                  <span
+                      style={{
+                          marginLeft: '3px',
+                          marginTop: '2px',
+                          color: 'red',
+                      }}
+                  />
+              </label>
+              <div
+                  className="col-md-6 input-wrap has-feedback has-success"
+                  style={{ position: "relative", paddingRight: "20px" }}
+              >
+                  <Input
+                      key={this.state.refreshKey}
+                      field={{
+                          name: "autoLogoutUIInactive"
+                      }}
+                      name="autoLogoutUIInactive"
+                      type="number"
+                      value={this.state.displayValue.autoLogoutUIInactive}
+                      placeholder={"Log-off timeout in minutes"}
+                      groupstyle={{ margin: "auto" }}
+                      onChange={value => this.handleChange('autoLogoutUIInactive', value)}
+                  />
+              </div>
+          </div>
+
         {!this.state.displayValue.id && (
         <div className="form-group ml-10">
           <div
@@ -1649,7 +1692,10 @@ class PEdit extends React.Component {
                 } else {
                   this.state.displayValue.phoneNumber = null;
                 }
-                let rp = await createUser(this.state.displayValue);
+                let rp = await createUser({
+                    ...this.state.displayValue,
+                    autoLogoutUIInactive: this.state.displayValue.autoLogoutUIInactive || -1,
+                });
                 this.setState({loading: false});
                 if (rp.success) {
                   Swal.fire({
@@ -1710,7 +1756,7 @@ class UserInfo extends React.Component {
       ignores: [
         'gender', 'avatar', 'birthDay', 'companyRefId', 'userCompany', 'userCompanyRefId', 'paymentId', 'identification', 'invoiceNo', 'ccName',
         'countryCode', 'lockServerPassword', 'lockServerUsername', 'participant', 'lastLogin', 'token', 'userRegistrationImageName', 'userRegistrationMessage',
-        'companyPosition', 'uuidIOS', 'deviceId', 'registeredTime', 'ccValidity', 'ccNum', 'company', 'approved', 'phoneNumber', 'status', 'groupUsers', 'role', 'permissions', 'loginOtpRequire'
+        'companyPosition', 'uuidIOS', 'deviceId', 'registeredTime', 'ccValidity', 'ccNum', 'company', 'approved', 'phoneNumber', 'status', 'groupUsers', 'role', 'permissions', 'loginOtpRequire', 'autoLogoutUIInactive'
       ],
       showRole: true,
       showGroup: false,
@@ -1718,6 +1764,9 @@ class UserInfo extends React.Component {
       roleColor: '#c5c6d0',
       nameRoleColor: '#042ee1',
     };
+    if (this.state.displayValue.autoLogoutUIInactive == -1) {
+        this.state.displayValue.autoLogoutUIInactive = null;
+    }
   }
 
   componentDidMount() {

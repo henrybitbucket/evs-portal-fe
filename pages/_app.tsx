@@ -224,7 +224,11 @@ class MyApp extends App<any, IMyAppState> {
       let lastTouch = localStorage.getItem('_last_touch');
       let store = this.state.store.getState();
       let loggedIn = store?.userInfo;
-      if (loggedIn?.email && ((Date.now() - Number(lastTouch)) > (touchTimeout * 1000))) {
+      let tmpTouchTimeout = touchTimeout;
+      if (loggedIn?.autoLogoutUIInactive > 0) {
+        tmpTouchTimeout = loggedIn?.autoLogoutUIInactive * 60;
+      }
+      if (loggedIn?.email && ((Date.now() - Number(lastTouch)) > (tmpTouchTimeout * 1000))) {
         eraseCookie(tokenName);
         redirect('/auth/signin', '/auth/signin');
       }
