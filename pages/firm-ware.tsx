@@ -258,6 +258,11 @@ const styles = css`
         transition: 0.15s;
       }
     }
+    
+    :global(.table-col-right) {
+        text-align: right;
+        padding-left: 10px !important;
+    }
 `;
 
 interface IDashboardPageState {
@@ -460,7 +465,8 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                   <th className="table-th" scope="col">Vendor</th>
                                                   <th className="table-th" scope="col">Hash code</th>
                                                   <th className="table-th" scope="col">File name</th>
-                                                  <th className="table-th" scope="col">Action</th>
+                                                  <th className="table-th table-col-right" style={{}} scope="col">Download</th>
+                                                  <th className="table-th table-col-right" style={{maxWidth: '70px'}} scope="col">Delete</th>
                                               </tr>
                                           </thead>
 
@@ -486,6 +492,24 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                           </td>
                                                           <td style={{ padding: '3px', paddingLeft: '30px' }}>
                                                               <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                                                  <div style={{ marginRight: '15px', marginLeft: '5px' }}>
+                                                                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
+                                                                      <div
+                                                                          data-tip="Click to download firmware"
+                                                                          className="button-icon"
+                                                                          onClick={async () => {
+                                                                              window.open(window.location.origin + '/api/file/' + it.fileName + '/' + it.id + '?type=firmware', '_blank').focus();
+                                                                          }}
+                                                                      >
+                                                                          <span>
+                                                                            <i style={{opacity: '0.6'}} className="fa fa-download" />
+                                                                          </span>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </td>
+                                                          <td className="table-col-right" style={{ padding: '3px', paddingLeft: '30px', maxWidth: '70px' }}>
+                                                              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
                                                                   <div>
                                                                       <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
                                                                       <div
@@ -506,7 +530,7 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                                                           html: `<p style='text-align: center; font-size: 14px;'>${'Successfully!'}</p>`,
                                                                                           icon: 'success',
                                                                                           confirmButtonText: 'OK',
-                                                                                        });
+                                                                                      });
                                                                                       window.location.href = window.location.href;
                                                                                   } else {
                                                                                       Swal.fire({
@@ -517,24 +541,9 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                                                                   }
                                                                               }
                                                                           }}
-                                                                          >
-                                                                          <span>
-                                                                            <i className="fa fa-trash-o" />
-                                                                          </span>
-                                                                      </div>
-                                                                  </div>
-
-                                                                  <div style={{ marginRight: '15px', marginLeft: '5px' }}>
-                                                                      <ReactTooltip globalEventOff="click" place="bottom" type="info" effect="solid"/>
-                                                                      <div
-                                                                          data-tip="Click to remove firmware"
-                                                                          className="button-icon"
-                                                                          onClick={async () => {
-                                                                              window.open(window.location.origin + '/api/file/' + it.fileName + '/' + it.id + '?type=firmware', '_blank').focus();
-                                                                          }}
                                                                       >
                                                                           <span>
-                                                                            <i style={{opacity: '0.6'}} className="fa fa-download" />
+                                                                            <i className="fa fa-trash-o" />
                                                                           </span>
                                                                       </div>
                                                                   </div>
