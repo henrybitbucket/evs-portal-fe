@@ -983,6 +983,9 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
         icon: 'success',
         confirmButtonText: 'OK',
       });
+      try {
+        this.onINFSent().then();
+      } catch(e) {}
     } else {
       this.setState({ loading: false });
       Swal.fire({
@@ -3710,9 +3713,6 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                 if (this.state.selectedData) {
                                   this.setState({ loading: true });
                                   this.sendCommand(this.state.selectedData.uid, 'INF', 'TCM_INFO');
-                                  try {
-                                    this.onINFSent();
-                                  } catch(e) {}
                                 }
                               }}
                             >
