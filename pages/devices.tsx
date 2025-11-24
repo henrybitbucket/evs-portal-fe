@@ -993,6 +993,19 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
     }
   }
 
+  onINFSent = async () => {
+    for (let i = 0; i < 5; i++) {
+        console.info('get INF sent')
+        await new Promise(resolve => setTimeout(() => resolve(null), 2000));
+        let rp = await getAllDevices({...this.props.params}, null);
+        rp = rp || {};
+        rp.response = rp.response || {};
+        this.setState({
+            devices: rp.response.results?.filter(device => device.uid !== 'server.csr')
+        });
+    }
+  }
+
   getRemarkValue = (deviceGroups) => {
     let remark = '';
     deviceGroups.forEach(r => {
@@ -3697,6 +3710,9 @@ class Homepage extends React.Component<IBasicPageProps, IDashboardPageState> {
                                 if (this.state.selectedData) {
                                   this.setState({ loading: true });
                                   this.sendCommand(this.state.selectedData.uid, 'INF', 'TCM_INFO');
+                                  try {
+                                    this.onINFSent();
+                                  } catch(e) {}
                                 }
                               }}
                             >
